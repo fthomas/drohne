@@ -1,0 +1,77 @@
+<?xml version="1.0"?>
+<doc>
+    <assembly>
+        <name>Drohne</name>
+    </assembly>
+    <members>
+        <member name="T:Drohne.LogRMC">
+            
+        </member>
+        <member name="M:Drohne.LogRMC.CompareTo(System.Object)">
+            
+        </member>
+        <member name="F:Drohne.LogRMC.logBegin">
+            
+        </member>
+        <member name="F:Drohne.LogRMC.logEnd">
+            
+        </member>
+        <member name="M:Drohne.LogRMC.#ctor">
+            
+        </member>
+        <member name="M:Drohne.LogRMC.#ctor(System.String)">
+            
+        </member>
+        <member name="M:Drohne.LogRMC.#ctor(System.String[])">
+            
+        </member>
+        <member name="M:Drohne.LogRMC.#ctor(System.Collections.ArrayList,System.DateTime,System.DateTime)">
+            
+        </member>
+        <member name="M:Drohne.LogRMC.ReadFile(System.String)">
+            
+        </member>
+        <member name="M:Drohne.LogRMC.Clean(System.Collections.Hashtable)">
+            
+        </member>
+        <member name="M:Drohne.LogRMC.GetSegment(System.DateTime,System.DateTime)">
+            
+        </member>
+        <member name="M:Drohne.LogRMC.GetRMCLog">
+            
+        </member>
+        <member name="M:Drohne.LogRMC.Split">
+            
+        </member>
+        <member name="M:Drohne.LogRMC.WriteLog(System.String,System.Boolean)">
+            
+        </member>
+        <member name="T:Drohne.GUI">
+            
+        </member>
+        <member name="M:Drohne.GUI.RunLoop">
+            
+        </member>
+        <member name="M:Drohne.GUI.#ctor">
+            
+        </member>
+        <member name="M:Drohne.GUI.DrawWelcomeForm">
+            
+        </member>
+        <member name="M:Drohne.GUI.DrawSourceSelect">
+            
+        </member>
+        <member name="M:Drohne.GUI.DrawFilterSelect">
+            
+        </member>
+        <member name="M:Drohne.GUI.DrawSaveForm">
+            
+        </member>
+        <member name="T:Drohne.Drohne">
+            
+        </member>
+        <member name="M:Drohne.Drohne.Main">
+            
+        </member>
+    </members>
+</doc>
