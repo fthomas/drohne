@@ -15,8 +15,8 @@ package-messages:
 	xgettext -ki18n $(SOURCES) -o po/drohne.pot
 	
 	for i in `find po -name *.po`; do \
-	  lang=`basename $$i .po`; \
-	  msgfmt --csharp -r i18n -l $$lang -d bin $$i; \
+	    lang=`basename $$i .po`; \
+	    msgfmt --csharp -r i18n -l $$lang -d bin $$i; \
 	done
 
 clean:

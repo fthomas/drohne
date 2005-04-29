@@ -7,7 +7,7 @@ public class Drohne
 {
     public delegate string DelegatedGettextMethod(string str);
     
-    public static void Main()
+    public static void Main(string[] args)
     {
         String locale = System.Environment.GetEnvironmentVariable("LC_ALL");
         
