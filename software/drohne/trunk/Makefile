@@ -1,21 +1,23 @@
-FILES    = src/gpsData.cs src/guiGtk.cs src/main.cs src/i18n.cs
-MCS_OPTS = -debug- -doc:doc/drohneDoc.xml -out:Drohne-gtk.exe -target:winexe
-ZFILES   = doc/ share/ src/ build.bat Drohne.exe makefile README.txt
-VERSION  = 0.1.0
 
-compile:
-	mcs $(MCS_OPTS) $(FILES)
+SOURCES = src/Main.cs
+
+ASSEMBLIES = -r:GNU.Gettext 
+MCS_OPTIONS = -debug+
+
+all: package-messages drohne.exe
+
+drohne.exe: $(SOURCES)
+	mcs $(MCS_OPTIONS) $(ASSEMBLIES) -out:"bin/drohne.exe" -target:winexe \
+	 $(SOURCES)
+	cp GNU.Gettext.dll bin
+
+package-messages:
+	xgettext -ki18n $(SOURCES) -o po/drohne.pot
+	
+	for i in `find po -name *.po`; do \
+	  lang=`basename $$i .po`; \
+	  msgfmt --csharp -r i18n -l $$lang -d bin $$i; \
+	done
 
 clean:
-	rm Drohne-gtk.exe
-	rm doc/drohneDoc.xml
-	rm Drohne
-
-dist:
-	-rm -r Drohne
-	-rm -r drohne-$(VERSION).zip
-	mkdir Drohne
-	cp -r $(ZFILES) Drohne
-	zip -9 -r drohne-$(VERSION).zip Drohne
-
-# vim:fileformat=unix
+	rm -rf bin/*
