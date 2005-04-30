@@ -1,13 +1,18 @@
 /* $Id$ */
 
 using System;
-using GNU.Gettext;
 
 public class Drohne
 {
+    public static void Main(string[] args)
+    {
+        setCultureInfo();
+        //GUI.RunLoop();
+    }
+
     public delegate string DelegatedGettextMethod(string str);
     
-    public static void Main(string[] args)
+    private static void setCultureInfo() 
     {
         String locale = System.Environment.GetEnvironmentVariable("LC_ALL");
         
@@ -23,14 +28,9 @@ public class Drohne
                 new System.Globalization.CultureInfo(locale.Replace('_','-'));
         }
         
-        //GUI.RunLoop();
-
-        GettextResourceManager catalog = new GettextResourceManager("i18n");
-
-        DelegatedGettextMethod i18n = 
-            new DelegatedGettextMethod(catalog.GetString);
-
-        Console.WriteLine( catalog.GetString("hello") );
-        Console.WriteLine( i18n("sleeping") );
+        //GettextResourceManager catalog = new GettextResourceManager("i18n");
+        //
+        //DelegatedGettextMethod i18n = 
+        //    new DelegatedGettextMethod(catalog.GetString);
     }
 }
