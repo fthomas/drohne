@@ -6,13 +6,16 @@ public class Drohne
 {
     public static void Main(string[] args)
     {
-        setCultureInfo();
-        //GUI.RunLoop();
+        SetCultureInfo();
+	
+        new GUI(args);
     }
 
     public delegate string DelegatedGettextMethod(string str);
     
-    private static void setCultureInfo() 
+    public static string i18n(string str){return str;}
+    
+    private static void SetCultureInfo() 
     {
         String locale = System.Environment.GetEnvironmentVariable("LC_ALL");
         
