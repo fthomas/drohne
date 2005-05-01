@@ -1,5 +1,9 @@
-SOURCES = src/Main.cs src/GUI.cs
-RESOURCES = src/gui.glade
+SOURCES = \
+src/main.cs \
+src/gui.cs
+
+RESOURCES = \
+src/gui.glade
 
 RESOURCES_BUILD = $(foreach res,$(RESOURCES), $(addprefix -resource:,$(res)),$(notdir $(res)))
 PKG_REFERENCES_BUILD = -pkg:gtk-sharp,glade-sharp

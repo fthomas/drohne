@@ -20,30 +20,18 @@
 /* $Id$ */
 
 using System;
+using Gtk;
+using Glade;
 
-public class Drohne
+public class GUI
 {
-    public static void Main(string[] args)
+    public GUI(string[] args)
     {
-        SetCultureInfo();
+        Application.Init();
 
-        new GUI(args);
+        Glade.XML gxml = new Glade.XML(null, "gui.glade", "window1", null);
+        gxml.Autoconnect(this);
+        Application.Run();
     }
-
-    private static void SetCultureInfo() 
-    {
-        String locale = System.Environment.GetEnvironmentVariable("LC_ALL");
-        
-        if (locale == null || locale == "")
-            locale = System.Environment.GetEnvironmentVariable("LANG");
     
-        if (!(locale == null || locale == "")) {
-            if (locale.IndexOf('.') >= 0)
-                locale = locale.Substring(0,locale.IndexOf('.'));
-        
-            System.Threading.Thread.CurrentThread.CurrentCulture = 
-                System.Threading.Thread.CurrentThread.CurrentUICulture = 
-                new System.Globalization.CultureInfo(locale.Replace('_','-'));
-        }
-    }
 }
