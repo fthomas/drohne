@@ -29,9 +29,16 @@ public class GUI
     {
         Application.Init();
 
-        Glade.XML gxml = new Glade.XML(null, "gui.glade", "window1", null);
+        Glade.XML gxml = new Glade.XML(null, "gui.glade", "MainWindow", null);
         gxml.Autoconnect(this);
+        
         Application.Run();
+    }
+
+    public void OnMainWindowDeleteEvent(object o, DeleteEventArgs args)
+    {
+        Application.Quit();
+        args.RetVal = true;
     }
     
 }
