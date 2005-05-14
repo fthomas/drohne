@@ -1,6 +1,7 @@
 SOURCES = \
   src/main.cs \
-  src/gui.cs
+  src/gui.cs \
+  src/logformat.cs
 
 RESOURCES = \
   src/gui.glade
@@ -17,7 +18,7 @@ drohne.exe: $(SOURCES) $(RESOURCES)
 	 $(RESOURCES_BUILD) $(PKG_REFERENCES_BUILD) $(SOURCES)
 
 package-messages:
-	xgettext -ki18n $(SOURCES) -o po/drohne.pot
+	xgettext -ki18n $(SOURCES) $(RESOURCES) -o po/drohne.pot
 
 clean:
 	rm -rf bin/*

@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2005-04-30 18:22+0200\n"
+"POT-Creation-Date: 2005-05-14 22:27+0200\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -16,10 +16,26 @@ msgstr ""
 "Content-Type: text/plain; charset=CHARSET\n"
 "Content-Transfer-Encoding: 8bit\n"
 
-#: src/Main.cs:33
-msgid "hello"
+#: src/gui.glade:8
+msgid "Drohne"
 msgstr ""
 
-#: src/Main.cs:34
-msgid "sleeping"
+#: src/gui.glade:37
+msgid "_File"
+msgstr ""
+
+#: src/gui.glade:90
+msgid "_Edit"
+msgstr ""
+
+#: src/gui.glade:135
+msgid "_Help"
+msgstr ""
+
+#: src/gui.glade:144
+msgid "_About"
+msgstr ""
+
+#: src/gui.glade:182
+msgid "Select File"
 msgstr ""

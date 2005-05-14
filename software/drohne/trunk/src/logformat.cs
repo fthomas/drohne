@@ -20,42 +20,18 @@
 /* $Id$ */
 
 using System;
-using Gtk;
-using Glade;
 
-public class GUI
+public interface ILogFormat: IComparable
 {
-    public GUI(string[] args)
-    {
-        Application.Init();
-
-        Glade.XML mainGlade = 
-            new Glade.XML(null, "gui.glade", "MainWindow", null);	
-        mainGlade.Autoconnect(this);
-
-        Application.Run();
-    }
-
-    public void CreateFileSelection()
-    {
-        Glade.XML fsGlade = 
-            new Glade.XML(null, "gui.glade", "FileSelection", null);
-        fsGlade.Autoconnect(this);
-    }
-
-    public void OnMainWindowDeleteEvent(object obj, DeleteEventArgs args)
-    {
-        Application.Quit();
-        args.RetVal = true;
-    }
-    
-    public void OnMenuFileQuitActivate(object obj, EventArgs args)
-    {
-        Application.Quit();
-    }
-
-    public void OnMenuFileOpenActivate(object obj, EventArgs args)
-    {
-        CreateFileSelection();
-    }
+    DateTime logBegin { get; }
+    DateTime logEnd { get; }
+        
+    bool ReadFile(string filename);
+    bool WriteFile(string filename);
 }
+
+//public class LogFormatGPRMC: ILogFormat
+//{}
+
+//public class LogFormatOziExplorer: ILogFormat
+//{}
