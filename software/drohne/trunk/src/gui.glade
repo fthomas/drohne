@@ -18,7 +18,8 @@
   <property name="skip_pager_hint">False</property>
   <property name="type_hint">GDK_WINDOW_TYPE_HINT_NORMAL</property>
   <property name="gravity">GDK_GRAVITY_NORTH_WEST</property>
-  <signal name="delete_event" handler="OnMainWindowDeleteEvent" last_modification_time="Sun, 01 May 2005 18:05:50 GMT"/>
+  <property name="focus_on_map">True</property>
+  <signal name="delete_event" handler="OnMainWindowDeleteEvent" last_modification_time="Sat, 14 May 2005 12:46:28 GMT"/>
 
   <child>
     <widget class="GtkVBox" id="vbox1">
@@ -70,11 +71,11 @@
 		  </child>
 
 		  <child>
-		    <widget class="GtkImageMenuItem" id="quit1">
+		    <widget class="GtkImageMenuItem" id="MenuFileQuit">
 		      <property name="visible">True</property>
 		      <property name="label">gtk-quit</property>
 		      <property name="use_stock">True</property>
-		      <signal name="activate" handler="OnMainWindowDeleteEvent" last_modification_time="Sun, 01 May 2005 18:14:56 GMT"/>
+		      <signal name="activate" handler="OnMenuFileQuitActivate" last_modification_time="Sat, 14 May 2005 12:45:39 GMT"/>
 		    </widget>
 		  </child>
 		</widget>

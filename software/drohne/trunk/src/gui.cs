@@ -35,10 +35,15 @@ public class GUI
         Application.Run();
     }
 
-    public void OnMainWindowDeleteEvent(object o, DeleteEventArgs args)
+    public void OnMainWindowDeleteEvent(object obj, DeleteEventArgs args)
     {
         Application.Quit();
         args.RetVal = true;
+    }
+    
+    public void OnMenuFileQuitActivate(object obj, EventArgs args)
+    {
+        Application.Quit();
     }
     
 }
