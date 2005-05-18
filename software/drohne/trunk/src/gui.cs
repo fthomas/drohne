@@ -25,6 +25,8 @@ using Glade;
 
 public class GUI
 {
+    [Glade.Widget] Gtk.Window MainWindow; 
+        
     public GUI(string[] args)
     {
         Application.Init();
@@ -36,13 +38,9 @@ public class GUI
         Application.Run();
     }
 
-    public void CreateFileSelection()
-    {
-        Glade.XML fsGlade = 
-            new Glade.XML(null, "gui.glade", "FileSelection", null);
-        fsGlade.Autoconnect(this);
-    }
-
+    /* The following methods are handlers for the signals defined in Glade.
+     * They are autoconnected with the signals by Glade.XML.Autoconnect().
+     */ 
     public void OnMainWindowDeleteEvent(object obj, DeleteEventArgs args)
     {
         Application.Quit();
@@ -56,6 +54,11 @@ public class GUI
 
     public void OnMenuFileOpenActivate(object obj, EventArgs args)
     {
-        CreateFileSelection();
+        FileSelection fs = new FileSelection(Drohne.i18n("Logdatei öffnen"));
+        if ( (ResponseType) fs.Run() != ResponseType.Ok)
+        {
+            fs.Hide();
+            return;
+        }
     }
 }

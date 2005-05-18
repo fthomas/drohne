@@ -21,17 +21,33 @@
 
 using System;
 
-public interface ILogFormat: IComparable
+public class Log: IComparable
 {
-    DateTime logBegin { get; }
-    DateTime logEnd { get; }
-        
-    bool ReadFile(string filename);
-    bool WriteFile(string filename);
+    private DateTime begin;
+    private DateTime end;
+    
+    public DateTime Begin {
+        get { return begin; }
+    }
+    public DateTime End { 
+        get { return end; } 
+    }
+    
+    public bool ReadFile(string filename)
+    {
+        return true;
+    }
+    
+    public bool WriteFile(string filename)
+    {
+        return true;
+    }
 }
 
-//public class LogFormatGPRMC: ILogFormat
-//{}
+public class LogGPRMC: Log
+{
+}
 
-//public class LogFormatOziExplorer: ILogFormat
-//{}
+public class LogOziExplorer: Log
+{
+}

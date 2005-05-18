@@ -30,6 +30,8 @@ public class Drohne
         new GUI(args);
     }
 
+    public static string i18n(string str){ return str; }
+    
     private static void SetCultureInfo() 
     {
         String locale = System.Environment.GetEnvironmentVariable("LC_ALL");
@@ -37,7 +39,7 @@ public class Drohne
         if (locale == null || locale == "")
             locale = System.Environment.GetEnvironmentVariable("LANG");
     
-        if (!(locale == null || locale == "")) {
+        if (!(locale == null || locale == "")){
             if (locale.IndexOf('.') >= 0)
                 locale = locale.Substring(0,locale.IndexOf('.'));
         
