@@ -21,16 +21,26 @@
 
 using System;
 
-public class Log: IComparable
+public class Log
 {
-    private DateTime begin;
+}
+
+public class LogBase
+{
+    private DateTime start;
     private DateTime end;
     
-    public DateTime Begin {
-        get { return begin; }
+    public DateTime Start {
+        get { return start; }
     }
     public DateTime End { 
         get { return end; } 
+    }
+    
+    public Log(){}
+
+    public Log(string logData)
+    {
     }
     
     public bool ReadFile(string filename)
@@ -44,10 +54,18 @@ public class Log: IComparable
     }
 }
 
-public class LogGPRMC: Log
+public class LogGPRMC: LogBase
 {
+    public static bool IsGPRMCLog()
+    {
+        return true;
+    }
 }
 
-public class LogOziExplorer: Log
+public class LogOziExplorer: LogBase
 {
+    public static bool IsOziExplorerLog()
+    {
+        return true;
+    }
 }

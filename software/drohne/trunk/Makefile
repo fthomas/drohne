@@ -1,7 +1,7 @@
 SOURCES = \
   src/main.cs \
   src/gui.cs \
-  src/logformat.cs
+  src/log.cs
 
 RESOURCES = \
   src/gui.glade
