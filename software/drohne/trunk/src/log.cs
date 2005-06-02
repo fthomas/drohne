@@ -1,5 +1,5 @@
 /***************************************************************************
- *   Copyright (C) 2005 by Frank S. Thomas                                 *
+ *   Copyright (C) 2003,2005 by Frank S. Thomas                            *
  *   frank@thomas-alfeld.de                                                *
  *                                                                         *
  *   This program is free software; you can redistribute it and/or modify  *
@@ -20,31 +20,52 @@
 /* $Id$ */
 
 using System;
-
-public class Log
-{
-}
+using System.Collections;
 
 public class LogBase
 {
-    private DateTime start;
-    private DateTime end;
+    private ArrayList dataArray = new ArrayList();
+    private DateTime start = new DateTime(0);
+    private DateTime end = new DateTime(0);
     
-    public DateTime Start {
+    public DateTime Start
+    {
         get { return start; }
     }
-    public DateTime End { 
+    
+    public DateTime End
+    { 
         get { return end; } 
     }
     
-    public Log(){}
-
-    public Log(string logData)
+    public LogBase() {}
+    
+    public LogBase(ArrayList dataArray, DateTime start, DateTime end)
     {
+        this.dataArray = dataArray;
+        this.start = start;
+        this.end = end;
     }
+    
+    public LogBase(string dataString)
+    {
+        string[] lines = dataString.Split('\n');
+        
+        foreach(string line in lines)
+            this.dataArray.Add(line);
+    }
+    
+    public LogBase(string[] filenames)
+    {
+        foreach(string filename in filenames)
+            this.ReadFile(filename);
+    }
+
+    public virtual void ParseData(){} 
     
     public bool ReadFile(string filename)
     {
+        this.ParseData();
         return true;
     }
     
@@ -54,18 +75,14 @@ public class LogBase
     }
 }
 
+public class LogWrapper: LogBase
+{
+}
+
 public class LogGPRMC: LogBase
 {
-    public static bool IsGPRMCLog()
-    {
-        return true;
-    }
 }
 
 public class LogOziExplorer: LogBase
 {
-    public static bool IsOziExplorerLog()
-    {
-        return true;
-    }
 }

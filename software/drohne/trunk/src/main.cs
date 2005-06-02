@@ -27,7 +27,9 @@ public class Drohne
     {
         SetCultureInfo();
 
-        new GUI(args);
+        TestBench();
+        
+        //new GUI(args);
     }
 
     public static string i18n(string str){ return str; }
@@ -47,5 +49,14 @@ public class Drohne
                 System.Threading.Thread.CurrentThread.CurrentUICulture = 
                 new System.Globalization.CultureInfo(locale.Replace('_','-'));
         }
+    }
+
+    private static void TestBench()
+    {
+        LogWrapper log_gprmc = new LogWrapper();
+        LogWrapper log_oziexp = new LogWrapper();
+
+        log_gprmc.ReadFile("../doc/examples/GPRMC.txt");
+        log_oziexp.ReadFile("../doc/examples/OziExplorer.txt");
     }
 }
