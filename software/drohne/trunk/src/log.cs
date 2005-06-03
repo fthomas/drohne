@@ -24,21 +24,11 @@ using System.Collections;
 
 public class LogBase
 {
-    private ArrayList dataArray = new ArrayList();
-    private DateTime start = new DateTime(0);
-    private DateTime end = new DateTime(0);
+    public ArrayList dataArray = new ArrayList();
+    public DateTime start = new DateTime(0);
+    public DateTime end = new DateTime(0);
     
-    public DateTime Start
-    {
-        get { return start; }
-    }
-    
-    public DateTime End
-    { 
-        get { return end; } 
-    }
-    
-    public LogBase() {}
+    public LogBase(){}
     
     public LogBase(ArrayList dataArray, DateTime start, DateTime end)
     {
@@ -47,42 +37,57 @@ public class LogBase
         this.end = end;
     }
     
-    public LogBase(string dataString)
-    {
-        string[] lines = dataString.Split('\n');
-        
-        foreach(string line in lines)
-            this.dataArray.Add(line);
-    }
+    public virtual void ParseData(string dataString){} 
     
-    public LogBase(string[] filenames)
+    public void ReadFile(string filename)
+    {}
+
+    public void ReadFile(string[] filenames)
     {
-        foreach(string filename in filenames)
+        foreach (string filename in filenames)
             this.ReadFile(filename);
     }
+    
+    public void WriteFile(string filename)
+    {}
+}
 
-    public virtual void ParseData(){} 
-    
-    public bool ReadFile(string filename)
-    {
-        this.ParseData();
-        return true;
-    }
-    
-    public bool WriteFile(string filename)
-    {
-        return true;
-    }
+public enum LogFormat
+{
+    Unknown = 0,
+    GPRMC = 1,
+    OziExplorer = 2
 }
 
 public class LogWrapper: LogBase
 {
+    private LogBase logInstance = null;
+    private LogFormat format = LogFormat.Unknown;
+    
+    public override void ParseData(string dataString)
+    {
+        if (logInstance == null){
+            this.SpecifyLogFormat(ref dataString);
+
+            switch (format)
+            {
+                case LogFormat.GPRMC:
+                    logInstance = new LogGPRMC();
+                    break;
+                case LogFormat.OziExplorer:
+                    break;
+                case LogFormat.Unknown:
+                    break;
+            }
+        }
+    }
+
+    private void SpecifyLogFormat(ref string dataString)
+    {}
 }
 
 public class LogGPRMC: LogBase
-{
-}
+{}
 
 public class LogOziExplorer: LogBase
-{
-}
+{}

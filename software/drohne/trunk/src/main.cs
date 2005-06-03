@@ -25,9 +25,9 @@ public class Drohne
 {
     public static void Main(string[] args)
     {
-        SetCultureInfo();
+        Drohne.SetCultureInfo();
 
-        TestBench();
+        Drohne.TestBench();
         
         //new GUI(args);
     }
