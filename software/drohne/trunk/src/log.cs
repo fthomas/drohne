@@ -21,6 +21,8 @@
 
 using System;
 using System.Collections;
+using System.IO;
+using System.Text.RegularExpressions;
 
 public class LogBase
 {
@@ -40,7 +42,13 @@ public class LogBase
     public virtual void ParseData(string dataString){} 
     
     public void ReadFile(string filename)
-    {}
+    {
+        using (StreamReader sr = new StreamReader(filename))
+        {
+            string fileContent = sr.ReadToEnd();
+            this.ParseData(fileContent);
+        }
+    }
 
     public void ReadFile(string[] filenames)
     {
@@ -63,31 +71,106 @@ public class LogWrapper: LogBase
 {
     private LogBase logInstance = null;
     private LogFormat format = LogFormat.Unknown;
+
+    public LogFormat Format
+    {
+        get { return format; }
+    }
     
     public override void ParseData(string dataString)
     {
-        if (logInstance == null){
-            this.SpecifyLogFormat(ref dataString);
+        this.CreateLogInstance(ref dataString);
+        this.logInstance.ParseData(dataString);
+        this.SyncLogWrapper();
+    }
 
-            switch (format)
+    private void CreateLogInstance(ref string dataString)
+    {
+        if (this.logInstance != null)
+            return;
+            
+        this.SpecifyLogFormat(ref dataString);
+        
+        switch (this.format)
+        {
+            case LogFormat.GPRMC:
+                this.logInstance = new LogGPRMC();
+                break;
+            case LogFormat.OziExplorer:
+                this.logInstance = new LogOziExplorer();
+                break;
+            case LogFormat.Unknown:
+                throw new ApplicationException("Unknown LogFormat");
+        }
+    }
+    
+    private void SpecifyLogFormat(ref string dataString)
+    {
+        Hashtable dummyFields = new Hashtable();
+        string[] lines = dataString.Split('\n');
+        
+        foreach (string line in lines)
+        {
+            if (LogGPRMC.IsLogEntry(line, ref dummyFields))
             {
-                case LogFormat.GPRMC:
-                    logInstance = new LogGPRMC();
-                    break;
-                case LogFormat.OziExplorer:
-                    break;
-                case LogFormat.Unknown:
-                    break;
+                this.format = LogFormat.GPRMC;
+                break;
+            }
+
+            if (LogOziExplorer.IsLogEntry(line, ref dummyFields))
+            {
+                this.format = LogFormat.OziExplorer;
+                break;
             }
         }
     }
 
-    private void SpecifyLogFormat(ref string dataString)
-    {}
+    private void SyncLogWrapper()
+    {
+        this.dataArray = this.logInstance.dataArray;
+        this.start = this.logInstance.start;
+        this.end = this.logInstance.end;
+    }
 }
 
 public class LogGPRMC: LogBase
-{}
+{ 
+    public override void ParseData(string dataString)
+    {}
+
+    public static bool IsLogEntry(string line, ref Hashtable fields)
+    {
+        // This regex matches a single "GPRMC" line.
+        string pattern = @"\$GPRMC,(\d{6}),(A|V),(\d{4}\.\d{0,4}),(N|S),"
+            + @"(\d{5}\.\d{0,4}),(E|W),(\d+\.\d{0,2}),(\d+\.\d{0,2}),"
+            + @"(\d{6}),(\d*\.?\d*),(E|W)?\*((\d|\w){0,2})";
+        
+        Match lineMatch = Regex.Match(line, pattern, RegexOptions.IgnoreCase);
+
+        if (!lineMatch.Success)
+            return false;
+       
+        return true;
+    }
+}
 
 public class LogOziExplorer: LogBase
-{}
+{
+    public override void ParseData(string dataString)
+    {}
+
+    public static bool IsLogEntry(string line, ref Hashtable fields)
+    {
+        // This regex matches a single "OziExplorer Track File" line.
+        string pattern = @"(\-?\d{1,3}\.\d+),(\-?\d{1,3}\.\d+),(0|1),"
+            + @"(\-?\d+),(\d+\.\d+),(\d{2}\-\D{3}\-\d{2}),(\d{2}:\d{2}:\d{2}),"
+            + @"(\d{1,2})?,(\d\.\d)?,([23]{1}D)?";
+        
+        Match lineMatch = Regex.Match(line, pattern, RegexOptions.IgnoreCase);
+        
+        if (!lineMatch.Success)
+            return false;
+        
+        return true;
+    }
+}

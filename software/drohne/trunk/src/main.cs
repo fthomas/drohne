@@ -56,7 +56,10 @@ public class Drohne
         LogWrapper log_gprmc = new LogWrapper();
         LogWrapper log_oziexp = new LogWrapper();
 
-        log_gprmc.ReadFile("../doc/examples/GPRMC.txt");
-        log_oziexp.ReadFile("../doc/examples/OziExplorer.txt");
+        log_gprmc.ReadFile("doc/examples/GPRMC.txt");
+        log_oziexp.ReadFile("doc/examples/OziExplorer.txt");
+
+        Console.WriteLine("GPRMC.txt format:\t{0}", log_gprmc.Format);
+        Console.WriteLine("OziExplorer.txt format:\t{0}", log_oziexp.Format);
     }
 }
