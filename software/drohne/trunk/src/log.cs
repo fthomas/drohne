@@ -62,9 +62,7 @@ public class LogBase
 
 public enum LogFormat
 {
-    Unknown = 0,
-    GPRMC = 1,
-    OziExplorer = 2
+    Unknown, GPRMC, OziExplorer
 }
 
 public class LogWrapper: LogBase
