@@ -58,6 +58,20 @@ public class LogBase
     
     public void WriteFile(string filename)
     {}
+
+    public void WriteData()
+    {
+        System.Console.WriteLine("Textual representation of dataArray");
+        System.Console.WriteLine("Size: " + dataArray.Count);
+        foreach (Hashtable dataEntry in this.dataArray)
+        {
+            foreach (DictionaryEntry field in dataEntry)
+            {
+                System.Console.Write(field.Key +"="+ field.Value + " ");
+            }
+            System.Console.WriteLine();
+        }
+    }
 }
 
 public enum LogFormat
@@ -104,18 +118,18 @@ public class LogWrapper: LogBase
     
     private void SpecifyLogFormat(ref string dataString)
     {
-        Hashtable dummyFields = new Hashtable();
+        Hashtable dummyEntry = new Hashtable();
         string[] lines = dataString.Split('\n');
         
         foreach (string line in lines)
         {
-            if (LogGPRMC.IsLogEntry(line, ref dummyFields))
+            if (LogGPRMC.IsLogEntry(line, ref dummyEntry))
             {
                 this.format = LogFormat.GPRMC;
                 break;
             }
 
-            if (LogOziExplorer.IsLogEntry(line, ref dummyFields))
+            if (LogOziExplorer.IsLogEntry(line, ref dummyEntry))
             {
                 this.format = LogFormat.OziExplorer;
                 break;
@@ -134,9 +148,20 @@ public class LogWrapper: LogBase
 public class LogGPRMC: LogBase
 { 
     public override void ParseData(string dataString)
-    {}
+    {
+        string[] lines = dataString.Split('\n');
+    
+        foreach (string line in lines)
+        {
+            Hashtable dataEntry = new Hashtable();
+            if (! LogGPRMC.IsLogEntry(line, ref dataEntry))
+                continue;
+            
+            this.dataArray.Add(dataEntry);
+        }
+    }
 
-    public static bool IsLogEntry(string line, ref Hashtable fields)
+    public static bool IsLogEntry(string line, ref Hashtable dataEntry)
     {
         // This regex matches a single "GPRMC" line.
         string pattern = @"\$GPRMC,(\d{6}),(A|V),(\d{4}\.\d{0,4}),(N|S),"
@@ -147,7 +172,24 @@ public class LogGPRMC: LogBase
 
         if (!lineMatch.Success)
             return false;
-       
+        
+        // These fields are specific to LogFormat.GPRMC.
+        dataEntry["UTCTime"] = lineMatch.Groups[1].ToString();
+        dataEntry["Status"] = lineMatch.Groups[2].ToString();
+        dataEntry["Latitude"] = lineMatch.Groups[3].ToString();
+        dataEntry["NSIndicator"] = lineMatch.Groups[4].ToString();
+        dataEntry["Longitude"] = lineMatch.Groups[5].ToString();
+        dataEntry["EWIndicator"] = lineMatch.Groups[6].ToString();
+        dataEntry["Speed"] = lineMatch.Groups[7].ToString();
+        dataEntry["Course"] = lineMatch.Groups[8].ToString();
+        dataEntry["UTCDate"] = lineMatch.Groups[9].ToString();
+        dataEntry["MagVariation"] = lineMatch.Groups[10].ToString();
+        dataEntry["MagVarEWInd"] = lineMatch.Groups[11].ToString();
+        dataEntry["Checksum"] = lineMatch.Groups[12].ToString();
+        
+        // The following fields are generic along all LogFormats.
+        dataEntry["LogFormat"] = LogFormat.GPRMC;
+        
         return true;
     }
 }
@@ -157,7 +199,7 @@ public class LogOziExplorer: LogBase
     public override void ParseData(string dataString)
     {}
 
-    public static bool IsLogEntry(string line, ref Hashtable fields)
+    public static bool IsLogEntry(string line, ref Hashtable dataEntry)
     {
         // This regex matches a single "OziExplorer Track File" line.
         string pattern = @"(\-?\d{1,3}\.\d+),(\-?\d{1,3}\.\d+),(0|1),"
@@ -168,6 +210,11 @@ public class LogOziExplorer: LogBase
         
         if (!lineMatch.Success)
             return false;
+       
+        // These fields are specific to LogFormat.OziExplorer.
+        
+        // The following fields are generic along all LogFormats.
+        dataEntry["LogFormat"] = LogFormat.OziExplorer;
         
         return true;
     }

@@ -1,0 +1,11 @@
+Source:
+Section:
+Priority: optional
+Maintainer: Frank S. Thomas <frank@thomas-alfeld.de>
+Standards-Version: 3.6.2
+Build-Depends: @cdbs@, libgtk-cil, libglade-cil
+
+Package:
+Architecture:
+Depends:
+Description:

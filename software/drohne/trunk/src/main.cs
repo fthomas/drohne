@@ -61,5 +61,8 @@ public class Drohne
 
         Console.WriteLine("GPRMC.txt format:\t{0}", log_gprmc.Format);
         Console.WriteLine("OziExplorer.txt format:\t{0}", log_oziexp.Format);
+    
+        log_gprmc.WriteData();
+        log_oziexp.WriteData();
     }
 }
