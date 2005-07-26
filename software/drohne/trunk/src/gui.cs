@@ -30,6 +30,7 @@ public class GUI
     [Glade.Widget] Gtk.Statusbar statusbar;
         
     private Gtk.FileSelection fileOpenDialog;
+    private LogWrapper logWrapper;
     
     public GUI(string[] args)
     {
@@ -41,7 +42,8 @@ public class GUI
 
         // Handle the fileOpenDialog for opening log files.
         this.fileOpenDialog = new FileSelection(Drohne.i18n("Open Log File"));
-        
+        this.fileOpenDialog.SelectMultiple = true;
+            
         this.fileOpenDialog.CancelButton.Clicked += new EventHandler(
                 OnFileOpenDialogCancelClicked);
         
@@ -81,13 +83,71 @@ public class GUI
 
     public void OnFileOpenDialogOkClicked(object obj, EventArgs args)
     {
-        string fn = this.fileOpenDialog.Filename;
+        this.logWrapper = new LogWrapper();
+        string[] selections = this.fileOpenDialog.Selections;
+
+        bool validLog = false;
+        int count = 0;
         
-        if (File.GetAttributes(fn) == FileAttributes.Directory)
+        foreach (string fn in selections)
+        {
+            if (File.GetAttributes(fn) == FileAttributes.Directory)
+                continue;
+            
+            try {
+                LogWrapper tempLogWrapper = new LogWrapper();
+                tempLogWrapper.ReadFile(fn);
+
+                // Use the first detected LogBase as this.logWrapper. All
+                // later detected LogBases are appended to this.logWrapper.
+                if (this.logWrapper.Format == LogFormat.Unknown)
+                    this.logWrapper = tempLogWrapper;
+                else
+                    this.logWrapper.Append(tempLogWrapper);
+ 
+                // Check if tempLogWrapper.Format is not identical with
+                // this.logWrapper.Format.
+                if (tempLogWrapper.Format != this.logWrapper.Format)
+                {
+                    string warning = String.Format("{0}:\r\n\"{1}\"",
+                            Drohne.i18n("Different log format detected"), fn);
+                    
+                    MessageDialog dialog = new MessageDialog(
+                            this.fileOpenDialog,
+                            DialogFlags.DestroyWithParent,
+                            MessageType.Warning, ButtonsType.Close, warning);
+
+                    dialog.Run();
+                    dialog.Destroy();
+                } 
+                
+                validLog = true;
+                count++;
+            }
+            catch (ApplicationException e)
+            {
+                string errorMessage = String.Format(
+                        "{0}:\r\n\"{1}\"", 
+                        Drohne.i18n("Unknown log format"), fn);
+                
+                MessageDialog dialog = new MessageDialog(
+                        this.fileOpenDialog, DialogFlags.DestroyWithParent,
+                        MessageType.Error, ButtonsType.Close, errorMessage);
+                
+                dialog.Run(); 
+                dialog.Destroy();
+            }
+        }
+
+        // If there was no valid log file in the selections array, the
+        // FileSelection dialog should stay opened.
+        if (validLog == false)
             return;
 
-        string statusStr = String.Format(" {0} \"{1}\" ",
-                Drohne.i18n("Loaded file"), fn);
+        string statusStr = String.Format("{0}: {1}, {2}: {3}",
+                Drohne.i18n("Loaded Files"), count,
+                Drohne.i18n("Log Format"), this.logWrapper.Format);
+        
         this.statusbar.Push(1, statusStr);
         
         this.fileOpenDialog.Hide();

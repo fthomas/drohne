@@ -38,7 +38,18 @@ public class LogBase
         this.start = start;
         this.end = end;
     }
-    
+
+    public void Append(LogBase newLog)
+    {
+        this.dataArray.AddRange(newLog.dataArray);
+        
+        if (this.start > newLog.start)
+            this.start = newLog.start;
+
+        if (this.end < newLog.end)
+            this.end = newLog.end;
+    }
+ 
     public virtual void ParseData(string dataString){} 
 
     public void UpdateLogStartEnd(DateTime dateTime)
@@ -109,6 +120,7 @@ public class LogBase
     {
         using (StreamReader sr = new StreamReader(filename))
         {
+            // Reading the whole file is not the best idea.
             string fileContent = sr.ReadToEnd();
             this.ParseData(fileContent);
         }
@@ -209,7 +221,7 @@ public class LogWrapper: LogBase
         string[] lines = dataString.Split('\n');
         
         foreach (string line in lines)
-        {
+        {   
             if (LogGPRMC.IsLogEntry(line, ref dummyEntry))
             {
                 this.format = LogFormat.GPRMC;
