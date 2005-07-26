@@ -29,7 +29,7 @@ public class Drohne
 
         Drohne.TestBench();
         
-        //new GUI(args);
+        new GUI(args);
     }
 
     public static string i18n(string str){ return str; }
@@ -70,5 +70,8 @@ public class Drohne
         LogBase gprmc_slice = log_gprmc.GetSlice(begin, end);
 
         gprmc_slice.WriteData();
+
+        log_gprmc.WriteFile("doc/examples/GPRMC.out.txt", false);
+        log_oziexp.WriteFile("doc/examples/OziExplorer.out.txt", false);
     }
 }

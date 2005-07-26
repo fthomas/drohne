@@ -55,9 +55,29 @@ public class LogBase
         foreach (string filename in filenames)
             this.ReadFile(filename);
     }
+   
+    public virtual string EntryToString(Hashtable dataEntry){return "";}
     
-    public void WriteFile(string filename)
-    {}
+    public void WriteFile(string filename, bool append)
+    {
+        if (append == false)
+        {
+            using (StreamWriter sw = File.CreateText(filename))
+            {
+                foreach (Hashtable dataEntry in this.dataArray)
+                    sw.WriteLine(EntryToString(dataEntry));
+            }
+        }
+        
+        if (append == true)
+        {
+            using (StreamWriter sw = File.AppendText(filename))
+            {
+                foreach (Hashtable dataEntry in this.dataArray)
+                    sw.WriteLine(EntryToString(dataEntry));
+            }
+        }
+    }
 
     public void WriteData()
     {
@@ -121,7 +141,6 @@ public class LogWrapper: LogBase
     {
         this.CreateLogInstance(ref dataString);
         this.logInstance.ParseData(dataString);
-        //this.logInstance.SortByDateTime();
         this.SyncLogWrapper();
     }
 
@@ -172,6 +191,14 @@ public class LogWrapper: LogBase
         this.start = this.logInstance.start;
         this.end = this.logInstance.end;
     }
+
+    public override string EntryToString(Hashtable dataEntry)
+    {
+        if (this.logInstance == null)
+            throw new ApplicationException("LogInstance not initialized");
+	
+        return this.logInstance.EntryToString(dataEntry);
+    }
 }
 
 public class LogGPRMC: LogBase
@@ -187,13 +214,13 @@ public class LogGPRMC: LogBase
             
             this.dataArray.Add(dataEntry);
 
-            // Use DateTime of first entry for the time boundary.
+            // Use DateTime of first entry for the time range.
             if (dataArray.Count == 1)
             {
                 this.start = (DateTime) dataEntry["GenDateTime"];
                 this.end = (DateTime) dataEntry["GenDateTime"];
             }
-            // And update the time boundary with every entry.
+            // And update the time range with every entry.
             this.UpdateLogStartEnd((DateTime) dataEntry["GenDateTime"]);
         }
     }
@@ -233,6 +260,18 @@ public class LogGPRMC: LogBase
         return true;
     }
 
+    public override string EntryToString(Hashtable dataEntry)
+    {
+        return String.Format("{0},{1},{2},{3},{4},{5},{6},{7},{8},{9},"
+                + "{10},{11}*{12}", "$GPRMC", dataEntry["UTCTime"],
+                dataEntry["Status"],          dataEntry["Latitude"],
+                dataEntry["NSIndicator"],     dataEntry["Longitude"],
+                dataEntry["EWIndicator"],     dataEntry["Speed"],
+                dataEntry["Course"],          dataEntry["UTCDate"],
+                dataEntry["MagVariation"],    dataEntry["MagVarEWInd"],
+                dataEntry["Checksum"]);
+    }
+
     public static DateTime GetEntryDateTime(string utcTime, string utcDate)
     {
         int day = int.Parse(utcDate.Substring(0, 2));
@@ -265,13 +304,13 @@ public class LogOziExplorer: LogBase
 
             this.dataArray.Add(dataEntry);
 
-            // Use DateTime of first entry for the time boundary.
+            // Use DateTime of first entry for the time range.
             if (dataArray.Count == 1)
             {
                 this.start = (DateTime) dataEntry["GenDateTime"];
                 this.end = (DateTime) dataEntry["GenDateTime"];
             }
-            // And update the time boundary with every entry.
+            // And update the time range with every entry.
             this.UpdateLogStartEnd((DateTime) dataEntry["GenDateTime"]);
         }
     }
@@ -303,6 +342,15 @@ public class LogOziExplorer: LogBase
                 Double.Parse(dataEntry["Date"].ToString()));
             
         return true;
+    }
+
+    public override string EntryToString(Hashtable dataEntry)
+    {
+        return String.Format("{0},{1},{2},{3},{4},{5},{6}",
+                dataEntry["Latitude"], dataEntry["Longitude"],
+                dataEntry["Code"],     dataEntry["Altitude"],
+                dataEntry["Date"],     dataEntry["DateStr"],
+                dataEntry["TimeStr"]);
     }
 
     public static DateTime GetEntryDateTime(double days)
