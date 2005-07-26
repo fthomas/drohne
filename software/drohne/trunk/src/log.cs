@@ -40,6 +40,70 @@ public class LogBase
     }
     
     public virtual void ParseData(string dataString){} 
+
+    public void UpdateLogStartEnd(DateTime dateTime)
+    {
+        if (this.start > dateTime)
+            this.start = dateTime;
+        
+        if (this.end < dateTime)
+            this.end = dateTime;
+    }
+
+    public LogBase GetSlice(DateTime sliceBegin, DateTime sliceEnd)
+    {
+        ArrayList tmpArray = new ArrayList();
+        foreach (Hashtable dataEntry in this.dataArray)
+        {
+            DateTime time = (DateTime) dataEntry["GenDateTime"];
+
+            if (time < sliceBegin || time > sliceEnd)
+                continue;
+
+            tmpArray.Add(dataEntry);
+        }
+        return new LogBase(tmpArray, sliceBegin, sliceEnd);
+    }
+    
+    public ArrayList SplitByBreak(TimeSpan breakTime)
+    {
+        ArrayList logSliceArray = new ArrayList();
+            
+        DateTime dayPlus0 = this.start;
+        DateTime dayPlus1 = new DateTime(0);
+
+        DateTime splitStart = this.start;
+        DateTime splitEnd = new DateTime();
+        
+        bool first = true;
+        int count = this.dataArray.Count;
+        int i = 0;
+        
+        foreach (Hashtable dataEntry in this.dataArray)
+        {
+            i++;
+            if (first)
+            {
+                first = false;
+                continue;
+            }
+            
+            dayPlus1 = (DateTime) dataEntry["GenDateTime"];
+
+            // Add a slice to the logSliceArray if breakTime is greater than
+            // the time span between two dataEntries or the last entry in
+            // this.dataArray is reached.
+            if (dayPlus1 - dayPlus0 > breakTime || i == count)
+            {
+                splitEnd = dayPlus0;
+                logSliceArray.Add(this.GetSlice(splitStart, splitEnd));
+                splitStart = dayPlus1;
+            }
+            
+            dayPlus0 = (DateTime) dataEntry["GenDateTime"];
+        }
+        return logSliceArray;
+    }
     
     public void ReadFile(string filename)
     {
@@ -79,46 +143,21 @@ public class LogBase
 
     public virtual string EntryToString(Hashtable dataEntry){return "";}
 
-    public void WriteData()
+    public override string ToString()
     {
-        string header = "--- Textual representation of dataArray ---\r\n"
-                      + "dataArray.Count: " + dataArray.Count + "\r\n"
-                      + "start: " + this.start + "\r\n" 
-                      + "end: " + this.end + "\r\n";
-        System.Console.Write(header);
+        string str = String.Format("dataArray.Count: {0}\r\n"
+                + "start: {1}\r\nend: {2}\r\n",
+                dataArray.Count, this.start, this.end);
         
         foreach (Hashtable dataEntry in this.dataArray)
         {
             foreach (DictionaryEntry field in dataEntry)
             {
-                System.Console.Write(field.Key +"="+ field.Value +" ");
+                str += String.Format("{0}={1} ", field.Key, field.Value);
             }
-            System.Console.WriteLine();
+            str += "\r\n";
         }
-    }
-
-    public void UpdateLogStartEnd(DateTime dateTime)
-    {
-        if (this.start > dateTime)
-            this.start = dateTime;
-        
-        if (this.end < dateTime)
-            this.end = dateTime;
-    }
-
-    public LogBase GetSlice(DateTime sliceBegin, DateTime sliceEnd)
-    {
-        ArrayList tmpArray = new ArrayList();
-        foreach (Hashtable dataEntry in this.dataArray)
-        {
-            DateTime time = (DateTime) dataEntry["GenDateTime"];
-
-            if (time < sliceBegin || time > sliceEnd)
-                continue;
-
-            tmpArray.Add(dataEntry);
-        }
-        return new LogBase(tmpArray, sliceBegin, sliceEnd);
+        return str;
     }
 }
 

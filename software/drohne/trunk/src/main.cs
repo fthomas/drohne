@@ -20,6 +20,7 @@
 /* $Id$ */
 
 using System;
+using System.Collections;
 
 public class Drohne
 {
@@ -27,7 +28,7 @@ public class Drohne
     {
         Drohne.SetCultureInfo();
 
-        Drohne.TestBench();
+        //Drohne.TestBench();
         
         new GUI(args);
     }
@@ -62,16 +63,26 @@ public class Drohne
         Console.WriteLine("GPRMC.txt format:\t{0}", log_gprmc.Format);
         Console.WriteLine("OziExplorer.txt format:\t{0}", log_oziexp.Format);
     
-        log_gprmc.WriteData();
-        log_oziexp.WriteData();
+        Console.WriteLine(log_gprmc);
+        Console.WriteLine(log_oziexp);
 
         DateTime begin = new DateTime(2003,05,27, 16,20,00);
         DateTime end   = new DateTime(2003,05,27, 16,21,00);
         LogBase gprmc_slice = log_gprmc.GetSlice(begin, end);
 
-        gprmc_slice.WriteData();
+        Console.WriteLine(gprmc_slice);
 
         log_gprmc.WriteFile("doc/examples/GPRMC.out.txt", false);
         log_oziexp.WriteFile("doc/examples/OziExplorer.out.txt", false);
+    
+        TimeSpan breakTime = new TimeSpan(12,0,0);
+        
+        ArrayList gprmc_slices = log_gprmc.SplitByBreak(breakTime);
+        foreach (LogBase slice in gprmc_slices)
+            Console.WriteLine(slice);
+
+        ArrayList oziexp_slices = log_oziexp.SplitByBreak(breakTime);
+        foreach (LogBase slice in oziexp_slices)
+            Console.WriteLine(slice);
     }
 }
