@@ -10,7 +10,7 @@ export MONO_SHARED_DIR = $(CURDIR)/debian
 
 DEB_MAKE_CLEAN_TARGET := clean
 DEB_MAKE_BUILD_TARGET := drohne.exe
-DEB_MAKE_INSTALL_TARGET := install DESTDIR=$(CURDIR)/debian/drohne 
+DEB_MAKE_INSTALL_TARGET := install DESTDIR=$(CURDIR)/debian/drohne PREFIX=/usr
 DEB_MAKE_CHECK_TARGET :=
 
 common-binary-indep::
