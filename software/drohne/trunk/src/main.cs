@@ -1,6 +1,6 @@
 /***************************************************************************
- *   Copyright (C) 2005 by Frank S. Thomas                                 *
- *   frank@thomas-alfeld.de                                                *
+ *   Copyright (C) 2005 Frank S. Thomas                                    *
+ *                      <frank@thomas-alfeld.de>                           *
  *                                                                         *
  *   This program is free software; you can redistribute it and/or modify  *
  *   it under the terms of the GNU General Public License as published by  *
@@ -15,7 +15,7 @@
  *   You should have received a copy of the GNU General Public License     *
  *   along with this program; if not, write to the                         *
  *   Free Software Foundation, Inc.,                                       *
- *   59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.             *
+ *   51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.         *
  ***************************************************************************/
 /* $Id$ */
 
@@ -64,5 +64,11 @@ public class Drohne
     
         log_gprmc.WriteData();
         log_oziexp.WriteData();
+
+        DateTime begin = new DateTime(2003,05,27, 16,20,00);
+        DateTime end   = new DateTime(2003,05,27, 16,21,00);
+        LogBase gprmc_slice = log_gprmc.GetSlice(begin, end);
+
+        gprmc_slice.WriteData();
     }
 }

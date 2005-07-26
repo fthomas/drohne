@@ -1,6 +1,6 @@
 /***************************************************************************
- *   Copyright (C) 2003,2005 by Frank S. Thomas                            *
- *   frank@thomas-alfeld.de                                                *
+ *   Copyright (C) 2003,2005 Frank S. Thomas                               *
+ *                           <frank@thomas-alfeld.de>                      *
  *                                                                         *
  *   This program is free software; you can redistribute it and/or modify  *
  *   it under the terms of the GNU General Public License as published by  *
@@ -15,7 +15,7 @@
  *   You should have received a copy of the GNU General Public License     *
  *   along with this program; if not, write to the                         *
  *   Free Software Foundation, Inc.,                                       *
- *   59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.             *
+ *   51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.         *
  ***************************************************************************/
 /* $Id$ */
 
@@ -61,16 +61,44 @@ public class LogBase
 
     public void WriteData()
     {
-        System.Console.WriteLine("Textual representation of dataArray");
-        System.Console.WriteLine("Size: " + dataArray.Count);
+        string header = "--- Textual representation of dataArray ---\r\n"
+                      + "dataArray.Count: " + dataArray.Count + "\r\n"
+                      + "start: " + this.start + "\r\n" 
+                      + "end: " + this.end + "\r\n";
+        System.Console.Write(header);
+        
         foreach (Hashtable dataEntry in this.dataArray)
         {
             foreach (DictionaryEntry field in dataEntry)
             {
-                System.Console.Write(field.Key +"="+ field.Value + " ");
+                System.Console.Write(field.Key +"="+ field.Value +" ");
             }
             System.Console.WriteLine();
         }
+    }
+
+    public void UpdateLogStartEnd(DateTime dateTime)
+    {
+        if (this.start > dateTime)
+            this.start = dateTime;
+        
+        if (this.end < dateTime)
+            this.end = dateTime;
+    }
+
+    public LogBase GetSlice(DateTime sliceBegin, DateTime sliceEnd)
+    {
+        ArrayList tmpArray = new ArrayList();
+        foreach (Hashtable dataEntry in this.dataArray)
+        {
+            DateTime time = (DateTime) dataEntry["GenDateTime"];
+
+            if (time < sliceBegin || time > sliceEnd)
+                continue;
+
+            tmpArray.Add(dataEntry);
+        }
+        return new LogBase(tmpArray, sliceBegin, sliceEnd);
     }
 }
 
@@ -93,6 +121,7 @@ public class LogWrapper: LogBase
     {
         this.CreateLogInstance(ref dataString);
         this.logInstance.ParseData(dataString);
+        //this.logInstance.SortByDateTime();
         this.SyncLogWrapper();
     }
 
@@ -150,7 +179,6 @@ public class LogGPRMC: LogBase
     public override void ParseData(string dataString)
     {
         string[] lines = dataString.Split('\n');
-    
         foreach (string line in lines)
         {
             Hashtable dataEntry = new Hashtable();
@@ -158,6 +186,15 @@ public class LogGPRMC: LogBase
                 continue;
             
             this.dataArray.Add(dataEntry);
+
+            // Use DateTime of first entry for the time boundary.
+            if (dataArray.Count == 1)
+            {
+                this.start = (DateTime) dataEntry["GenDateTime"];
+                this.end = (DateTime) dataEntry["GenDateTime"];
+            }
+            // And update the time boundary with every entry.
+            this.UpdateLogStartEnd((DateTime) dataEntry["GenDateTime"]);
         }
     }
 
@@ -188,16 +225,56 @@ public class LogGPRMC: LogBase
         dataEntry["Checksum"] = lineMatch.Groups[12].ToString();
         
         // The following fields are generic along all LogFormats.
-        dataEntry["LogFormat"] = LogFormat.GPRMC;
+        dataEntry["GenLogFormat"] = LogFormat.GPRMC;
+        dataEntry["GenDateTime"] = LogGPRMC.GetEntryDateTime(
+                dataEntry["UTCTime"].ToString(),
+                dataEntry["UTCDate"].ToString());
         
         return true;
+    }
+
+    public static DateTime GetEntryDateTime(string utcTime, string utcDate)
+    {
+        int day = int.Parse(utcDate.Substring(0, 2));
+        int month = int.Parse(utcDate.Substring(2, 2));
+        int year = int.Parse(utcDate.Substring(4, 2));
+        int hour = int.Parse(utcTime.Substring(0, 2));
+        int minute = int.Parse(utcTime.Substring(2, 2));
+        int second = int.Parse(utcTime.Substring(4, 2));
+
+        // This code expires on 2066. ;-)
+        if (year > 65)
+            year += 1900;
+        else
+            year += 2000;
+
+        return new DateTime(year, month, day, hour, minute, second);
     }
 }
 
 public class LogOziExplorer: LogBase
 {
     public override void ParseData(string dataString)
-    {}
+    {
+        string[] lines = dataString.Split('\n');
+        foreach (string line in lines)
+        {
+            Hashtable dataEntry = new Hashtable();
+            if (! LogOziExplorer.IsLogEntry(line, ref dataEntry))
+                continue;
+
+            this.dataArray.Add(dataEntry);
+
+            // Use DateTime of first entry for the time boundary.
+            if (dataArray.Count == 1)
+            {
+                this.start = (DateTime) dataEntry["GenDateTime"];
+                this.end = (DateTime) dataEntry["GenDateTime"];
+            }
+            // And update the time boundary with every entry.
+            this.UpdateLogStartEnd((DateTime) dataEntry["GenDateTime"]);
+        }
+    }
 
     public static bool IsLogEntry(string line, ref Hashtable dataEntry)
     {
@@ -212,10 +289,27 @@ public class LogOziExplorer: LogBase
             return false;
        
         // These fields are specific to LogFormat.OziExplorer.
+        dataEntry["Latitude"] = lineMatch.Groups[1].ToString();
+        dataEntry["Longitude"] = lineMatch.Groups[2].ToString();
+        dataEntry["Code"] = lineMatch.Groups[3].ToString();
+        dataEntry["Altitude"] = lineMatch.Groups[4].ToString();
+        dataEntry["Date"] = lineMatch.Groups[5].ToString();
+        dataEntry["DateStr"] = lineMatch.Groups[6].ToString();
+        dataEntry["TimeStr"] = lineMatch.Groups[7].ToString();
         
         // The following fields are generic along all LogFormats.
-        dataEntry["LogFormat"] = LogFormat.OziExplorer;
-        
+        dataEntry["GenLogFormat"] = LogFormat.OziExplorer;
+        dataEntry["GenDateTime"] = LogOziExplorer.GetEntryDateTime(
+                Double.Parse(dataEntry["Date"].ToString()));
+            
         return true;
+    }
+
+    public static DateTime GetEntryDateTime(double days)
+    {
+        DateTime dateTime = new DateTime(1899, 12, 30, 0 ,0 ,0);
+        dateTime = dateTime.AddDays(days);
+
+        return dateTime;
     }
 }
