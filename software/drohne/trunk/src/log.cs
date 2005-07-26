@@ -55,8 +55,6 @@ public class LogBase
         foreach (string filename in filenames)
             this.ReadFile(filename);
     }
-   
-    public virtual string EntryToString(Hashtable dataEntry){return "";}
     
     public void WriteFile(string filename, bool append)
     {
@@ -78,6 +76,8 @@ public class LogBase
             }
         }
     }
+
+    public virtual string EntryToString(Hashtable dataEntry){return "";}
 
     public void WriteData()
     {

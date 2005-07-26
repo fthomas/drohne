@@ -23,3 +23,6 @@ package-messages:
 clean:
 	rm -rf bin/*
 	-for backup in `find -name *.bak`; do rm $$backup; done
+
+install: all
+	install -D bin/drohne.exe $(DESTDIR)/usr/bin/drohne.exe
