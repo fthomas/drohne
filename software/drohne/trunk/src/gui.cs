@@ -20,21 +20,34 @@
 /* $Id$ */
 
 using System;
+using System.IO;
 using Gtk;
 using Glade;
 
 public class GUI
 {
-    [Glade.Widget] Gtk.Window MainWindow; 
+    [Glade.Widget] Gtk.Window mainWindow; 
+    [Glade.Widget] Gtk.Statusbar statusbar;
         
+    private Gtk.FileSelection fileOpenDialog;
+    
     public GUI(string[] args)
     {
         Application.Init();
 
         Glade.XML mainGlade = 
-            new Glade.XML(null, "gui.glade", "MainWindow", null);	
+            new Glade.XML(null, "gui.glade", "mainWindow", null);
         mainGlade.Autoconnect(this);
 
+        // Handle the fileOpenDialog for opening log files.
+        this.fileOpenDialog = new FileSelection(Drohne.i18n("Open Log File"));
+        
+        this.fileOpenDialog.CancelButton.Clicked += new EventHandler(
+                OnFileOpenDialogCancelClicked);
+        
+        this.fileOpenDialog.OkButton.Clicked += new EventHandler(
+                OnFileOpenDialogOkClicked);
+        
         Application.Run();
     }
 
@@ -54,11 +67,30 @@ public class GUI
 
     public void OnMenuFileOpenActivate(object obj, EventArgs args)
     {
-        FileSelection fs = new FileSelection(Drohne.i18n("Logdatei öffnen"));
-        if ( (ResponseType) fs.Run() != ResponseType.Ok)
+        if ((ResponseType) this.fileOpenDialog.Run() != ResponseType.Ok)
         {
-            fs.Hide();
+            this.fileOpenDialog.Hide();
             return;
         }
     }
+
+    public void OnFileOpenDialogCancelClicked(object obj, EventArgs args)
+    {
+        this.fileOpenDialog.Hide();
+    }
+
+    public void OnFileOpenDialogOkClicked(object obj, EventArgs args)
+    {
+        string fn = this.fileOpenDialog.Filename;
+        
+        if (File.GetAttributes(fn) == FileAttributes.Directory)
+            return;
+
+        string statusStr = String.Format(" {0} \"{1}\" ",
+                Drohne.i18n("Loaded file"), fn);
+        this.statusbar.Push(1, statusStr);
+        
+        this.fileOpenDialog.Hide();
+    }
 }
+
