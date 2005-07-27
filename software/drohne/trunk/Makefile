@@ -23,5 +23,6 @@ DESTDIR=
 PREFIX=/usr/local
 
 install: drohne.exe
-	install -D bin/drohne.sh  $(DESTDIR)$(PREFIX)/bin/drohne
+	install -D bin/drohne.sh $(DESTDIR)$(PREFIX)/bin/drohne
 	install -D bin/drohne.exe $(DESTDIR)$(PREFIX)/lib/drohne/drohne.exe
+	install -D src/drohne.desktop $(DESTDIR)$(PREFIX)/share/applications/drohne.desktop
