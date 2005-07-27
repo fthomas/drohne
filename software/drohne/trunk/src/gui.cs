@@ -40,11 +40,12 @@ public class GUI
     // Widgets from fileOpenDialogGlade
     [Glade.Widget] Gtk.FileSelection fileOpenDialog;
     
-    private LogWrapper logWrapper;
+    private LogWrapper totalLog = null;
+    private LogWrapper resultLog = null;
+
     private ListStore slicesStore = null;
-    
-    private ArrayList slicesArray;
-    private LogWrapper result = new LogWrapper();
+    private ArrayList slicesArray = null;
+
     private string saveFilename = "";
     
     public GUI(string[] args)
@@ -153,11 +154,11 @@ public class GUI
      */
     public void OnFileOpenDialogOkButtonClicked(object obj, EventArgs args)
     {
-        this.logWrapper = new LogWrapper();
+        this.totalLog = new LogWrapper();
         string[] selections = this.fileOpenDialog.Selections;
 
-        bool validLog = false;
         int count = 0;
+        bool validLog = false;
         
         foreach (string fn in selections)
         {
@@ -165,59 +166,36 @@ public class GUI
                 continue;
             
             try {
-                LogWrapper tempLogWrapper = new LogWrapper();
-                tempLogWrapper.ReadFile(fn);
+                LogWrapper tmpLogWrapper = new LogWrapper();
+                tmpLogWrapper.ReadFile(fn);
 
-                // Use the first detected LogBase as this.logWrapper. All
-                // later detected LogBases are appended to this.logWrapper.
-                if (this.logWrapper.Format == LogFormat.Unknown)
-                    this.logWrapper = tempLogWrapper;
+                if (this.totalLog.Format == LogFormat.Unknown)
+                    this.totalLog = tmpLogWrapper;
                 else
-                    this.logWrapper.Append(tempLogWrapper);
+                    this.logWrapper.Append(tmpLogWrapper);
  
-                // Check if tempLogWrapper.Format is not identical with
-                // this.logWrapper.Format.
-                if (tempLogWrapper.Format != this.logWrapper.Format)
-                {
-                    string warning = String.Format("{0}:\r\n\"{1}\"",
-                            Drohne.i18n("Different log format detected"), fn);
-                    
-                    MessageDialog dialog = new MessageDialog(
-                            this.fileOpenDialog,
-                            DialogFlags.DestroyWithParent,
-                            MessageType.Warning, ButtonsType.Close, warning);
-
-                    dialog.Run();
-                    dialog.Destroy();
-                } 
+                if (tmpLogWrapper.Format != this.totalLog.Format)
+                    this.ShowDifferenLogFormatDialog(fn);
                 
-                validLog = true;
                 count++;
+                validLog = true;
+                
             }
             catch (ApplicationException e)
             {
-                string errorMessage = String.Format(
-                        "{0}:\r\n\"{1}\"", 
-                        Drohne.i18n("Unknown log format"), fn);
-                
-                MessageDialog dialog = new MessageDialog(
-                        this.fileOpenDialog, DialogFlags.DestroyWithParent,
-                        MessageType.Error, ButtonsType.Close, errorMessage);
-                
-                dialog.Run(); 
-                dialog.Destroy();
+                this.ShowUnknownLogFormatDialog(fn);
             }
         }
 
-        // If there was no valid log file in the selections array, the
-        // FileSelection dialog should stay opened.
+        // Sync the appended logs with this.totalLog's logInstance.
+        this.totalLog.ReverseSync();
+
         if (validLog == false)
             return;
 
         string statusStr = String.Format("{0}: {1}, {2}: {3}",
                 Drohne.i18n("Loaded Files"), count,
                 Drohne.i18n("Log Format"), this.logWrapper.Format);
-        
         this.statusbar.Push(1, statusStr);
         
         this.fileOpenDialog.Hide();
@@ -236,23 +214,57 @@ public class GUI
      * end signal handlers *
      ***********************/
     
+    /************************************
+     * begin additional (popup) dialogs *
+     ************************************/
+
+    private void ShowDifferenLogFormatDialog(string filename)
+    {
+        string warning = String.Format("{0}:\r\n\"{1}\"",
+                Drohne.i18n("Different log format detected"), filename);
+                    
+        MessageDialog dialog = new MessageDialog(this.fileOpenDialog,
+                DialogFlags.DestroyWithParent, MessageType.Warning,
+                ButtonsType.Close, warning);
+
+        dialog.Run();
+        dialog.Destroy();
+    }
+
+    private void ShowUnknownLogFormatDialog(string filename)
+    {
+        string errorMessage = String.Format("{0}:\r\n\"{1}\"",
+                Drohne.i18n("Unknown log format"), filename);
+                
+        MessageDialog dialog = new MessageDialog(this.fileOpenDialog,
+                DialogFlags.DestroyWithParent, MessageType.Error,
+                ButtonsType.Close, errorMessage);
+                
+        dialog.Run(); 
+        dialog.Destroy();
+    }
+
+    /**********************************
+     * end additional (popup) dialogs *
+     **********************************/
+
     private string GetSaveFilename()
     {
         string filename = "drohne.txt";
-        if (this.logWrapper == null)
+        if (this.totalLog == null)
             return filename;
 
         filename = String.Format("drohne_{0}-{1}.txt",
-                this.logWrapper.start.ToString("yyyyMMdd"),
-                this.logWrapper.end.ToString("yyyyMMdd"));
+                this.totalLog.start.ToString("yyyyMMdd"),
+                this.totalLog.end.ToString("yyyyMMdd"));
 
         return filename;    
     }
 
     private void SetupSlicesTreeView()
     {
-        this.slicesStore = new ListStore(typeof(bool),
-                typeof(string), typeof(string));
+        this.slicesStore = new ListStore(typeof(int),
+                typeof(bool), typeof(string), typeof(string));
                 
         this.slicesTreeView.Model = slicesStore;
          
@@ -261,13 +273,13 @@ public class GUI
         crt.Toggled += CellRendererToggleToggled;           
          
         this.slicesTreeView.AppendColumn(Drohne.i18n("Select"),
-                crt, "active", 0);
+                crt, "active", 1);
 
         this.slicesTreeView.AppendColumn(Drohne.i18n("Log Start"),
-                new CellRendererText(), "text", 1);
+                new CellRendererText(), "text", 2);
         
         this.slicesTreeView.AppendColumn(Drohne.i18n("Log End"),
-                new CellRendererText(), "text", 2);
+                new CellRendererText(), "text", 3);
     }
     
     private void CellRendererToggleToggled(object obj, ToggledArgs args)
@@ -275,48 +287,51 @@ public class GUI
         TreeIter iter;
         if (this.slicesStore.GetIter(out iter, new TreePath(args.Path)))
         {
-            bool old = (bool) this.slicesStore.GetValue(iter, 0);
-            this.slicesStore.SetValue(iter, 0, !old);
+            bool old = (bool) this.slicesStore.GetValue(iter, 1);
+            this.slicesStore.SetValue(iter, 1, !old);
         }
     }
 
     private void PopulateSlicesTreeView()
     {
+        int count = 0;
         this.slicesStore.Clear();
         
         TimeSpan breakTime = new TimeSpan(24, 0, 0);
-        this.slicesArray = this.logWrapper.SplitByBreak(breakTime);
+        this.slicesArray = this.totalLog.SplitByBreak(breakTime);
         
         foreach (LogBase slice in this.slicesArray)
         {
-            this.slicesStore.AppendValues(true, slice.start.ToString(),
-                    slice.end.ToString());
+            this.slicesStore.AppendValues(count++, true,
+                    slice.start.ToString(), slice.end.ToString());
         }
     }
 
     private void GetSelectedSlices()
     {
-        this.result.Clear();
-        this.slicesStore.Foreach(AppendSliceForeachSelected);
-        
-        if (this.logWrapper == null)
+        if (this.totalLog == null)
             return;
-                
-        this.result.CreateLogInstance(this.logWrapper.Format);
-        this.result.ReverseSync();
-    }
-    
-    private bool AppendSliceForeachSelected(TreeModel model, TreePath path,
-            TreeIter iter)
-    {   
-        bool selected = (bool) this.slicesStore.GetValue(iter, 0);
-        if (selected)
+
+        this.resultLog = new LogWrapper();
+
+        // Iterate over the ListStore and append to this.result all slices
+        // that are marked as selected. 
+        for (int i = 0; i < this.slicesStore.NColumns; i++)
         {
-            // *shudder* It's ugly but works.
-            int row = Int16.Parse(path.ToString());
-            this.result.Append((LogBase) this.slicesArray[row]);
+            TreeIter iter;
+            TreePath path = new TreePath(String.Format("{0}", i));
+            
+            if (this.slicesStore.GetIter(out iter, path))
+            {
+                bool selected = (bool) this.slicesStore.GetValue(iter, 1);
+                if (selected)
+                {
+                    this.resultLog.Append((LogBase) this.slicesArray[i]);
+                }
+            }
         }
-        // Return false to keep Foreach going.
-        return false;
+                
+        this.resultLog.CreateLogInstance(this.totalLog.Format);
+        this.resultLog.ReverseSync();
     }
 }
