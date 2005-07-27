@@ -108,7 +108,7 @@ public class GUI
         }
         
         this.GetSelectedSlices();
-        this.result.WriteFile(this.saveFilename, false);
+        this.resultLog.WriteFile(this.saveFilename, false);
     }
 
     public void OnMenuFileSaveAsActivate(object obj, EventArgs args)
@@ -172,7 +172,7 @@ public class GUI
                 if (this.totalLog.Format == LogFormat.Unknown)
                     this.totalLog = tmpLogWrapper;
                 else
-                    this.logWrapper.Append(tmpLogWrapper);
+                    this.totalLog.Append(tmpLogWrapper);
  
                 if (tmpLogWrapper.Format != this.totalLog.Format)
                     this.ShowDifferenLogFormatDialog(fn);
@@ -195,7 +195,7 @@ public class GUI
 
         string statusStr = String.Format("{0}: {1}, {2}: {3}",
                 Drohne.i18n("Loaded Files"), count,
-                Drohne.i18n("Log Format"), this.logWrapper.Format);
+                Drohne.i18n("Log Format"), this.totalLog.Format);
         this.statusbar.Push(1, statusStr);
         
         this.fileOpenDialog.Hide();
@@ -315,8 +315,8 @@ public class GUI
         this.resultLog = new LogWrapper();
 
         // Iterate over the ListStore and append to this.result all slices
-        // that are marked as selected. 
-        for (int i = 0; i < this.slicesStore.NColumns; i++)
+        // that are marked as selected.
+        for (int i = 0; i < this.slicesArray.Count; i++)
         {
             TreeIter iter;
             TreePath path = new TreePath(String.Format("{0}", i));

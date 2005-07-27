@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2005-07-27 16:11+0200\n"
+"POT-Creation-Date: 2005-07-27 18:35+0200\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -16,31 +16,31 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 
-#: src/gui.cs:193
+#: src/gui.cs:197
 msgid "Loaded Files"
 msgstr ""
 
-#: src/gui.cs:194
+#: src/gui.cs:198
 msgid "Log Format"
 msgstr ""
 
-#: src/gui.cs:220
+#: src/gui.cs:224
 msgid "Different log format detected"
 msgstr ""
 
-#: src/gui.cs:233
+#: src/gui.cs:237
 msgid "Unknown log format"
 msgstr ""
 
-#: src/gui.cs:271
+#: src/gui.cs:275
 msgid "Select"
 msgstr ""
 
-#: src/gui.cs:274
+#: src/gui.cs:278
 msgid "Log Start"
 msgstr ""
 
-#: src/gui.cs:277
+#: src/gui.cs:281
 msgid "Log End"
 msgstr ""
 
