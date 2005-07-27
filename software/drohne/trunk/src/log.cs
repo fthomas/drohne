@@ -21,6 +21,7 @@
 
 using System;
 using System.Collections;
+using System.Globalization;
 using System.IO;
 using System.Text.RegularExpressions;
 
@@ -48,6 +49,13 @@ public class LogBase
 
         if (this.end < newLog.end)
             this.end = newLog.end;
+    }
+
+    public void Clear()
+    {
+        this.dataArray.Clear();
+        this.start = new DateTime(0);
+        this.end = new DateTime(0);
     }
  
     public virtual void ParseData(string dataString){} 
@@ -181,28 +189,23 @@ public enum LogFormat
 public class LogWrapper: LogBase
 {
     private LogBase logInstance = null;
-    private LogFormat format = LogFormat.Unknown;
+    private LogFormat logFormat = LogFormat.Unknown;
 
     public LogFormat Format
     {
-        get { return format; }
+        get { return logFormat; }
     }
     
     public override void ParseData(string dataString)
     {
         this.CreateLogInstance(ref dataString);
         this.logInstance.ParseData(dataString);
-        this.SyncLogWrapper();
+        this.Sync();
     }
 
-    private void CreateLogInstance(ref string dataString)
+    public void CreateLogInstance(LogFormat format)
     {
-        if (this.logInstance != null)
-            return;
-            
-        this.SpecifyLogFormat(ref dataString);
-        
-        switch (this.format)
+        switch (format)
         {
             case LogFormat.GPRMC:
                 this.logInstance = new LogGPRMC();
@@ -215,6 +218,16 @@ public class LogWrapper: LogBase
         }
     }
     
+    public void CreateLogInstance(ref string dataString)
+    {
+        if (this.logInstance != null)
+            return;
+            
+        this.SpecifyLogFormat(ref dataString);
+        
+        this.CreateLogInstance(this.logFormat);
+    }
+    
     private void SpecifyLogFormat(ref string dataString)
     {
         Hashtable dummyEntry = new Hashtable();
@@ -224,23 +237,30 @@ public class LogWrapper: LogBase
         {   
             if (LogGPRMC.IsLogEntry(line, ref dummyEntry))
             {
-                this.format = LogFormat.GPRMC;
+                this.logFormat = LogFormat.GPRMC;
                 break;
             }
 
             if (LogOziExplorer.IsLogEntry(line, ref dummyEntry))
             {
-                this.format = LogFormat.OziExplorer;
+                this.logFormat = LogFormat.OziExplorer;
                 break;
             }
         }
     }
 
-    private void SyncLogWrapper()
+    public void Sync()
     {
         this.dataArray = this.logInstance.dataArray;
         this.start = this.logInstance.start;
         this.end = this.logInstance.end;
+    }
+
+    public void ReverseSync()
+    {
+        this.logInstance.dataArray = this.dataArray;
+        this.logInstance.start = this.start;
+        this.logInstance.end = this.end;
     }
 
     public override string EntryToString(Hashtable dataEntry)
@@ -386,11 +406,14 @@ public class LogOziExplorer: LogBase
         dataEntry["Date"] = lineMatch.Groups[5].ToString();
         dataEntry["DateStr"] = lineMatch.Groups[6].ToString();
         dataEntry["TimeStr"] = lineMatch.Groups[7].ToString();
+         
+        NumberFormatInfo numberFormat = new NumberFormatInfo();
+        numberFormat.NumberDecimalSeparator = ".";
         
         // The following fields are generic along all LogFormats.
         dataEntry["GenLogFormat"] = LogFormat.OziExplorer;
         dataEntry["GenDateTime"] = LogOziExplorer.GetEntryDateTime(
-                Double.Parse(dataEntry["Date"].ToString()));
+                Double.Parse(dataEntry["Date"].ToString(), numberFormat));
             
         return true;
     }
@@ -408,7 +431,7 @@ public class LogOziExplorer: LogBase
     {
         DateTime dateTime = new DateTime(1899, 12, 30, 0 ,0 ,0);
         dateTime = dateTime.AddDays(days);
-
+        
         return dateTime;
     }
 }

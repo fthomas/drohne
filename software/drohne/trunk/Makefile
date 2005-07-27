@@ -22,6 +22,6 @@ clean:
 DESTDIR=
 PREFIX=/usr/local
 
-install: all
+install: drohne.exe
 	install -D bin/drohne.sh  $(DESTDIR)$(PREFIX)/bin/drohne
 	install -D bin/drohne.exe $(DESTDIR)$(PREFIX)/lib/drohne/drohne.exe

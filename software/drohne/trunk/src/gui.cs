@@ -20,53 +20,75 @@
 /* $Id$ */
 
 using System;
+using System.Collections;
 using System.IO;
 using Gtk;
 using Glade;
 
 public class GUI
 {
-    [Glade.Widget] Gtk.Window mainWindow; 
+    // Widgets from mainWindowGlade
     [Glade.Widget] Gtk.Statusbar statusbar;
+    [Glade.Widget] Gtk.TreeView slicesTreeView;
+    
+    // Widgets from aboutDialogGlade
+    [Glade.Widget] Gtk.Dialog aboutDialog;
+
+    // Widgets from fileSaveDialogGlade
+    [Glade.Widget] Gtk.FileSelection fileSaveDialog;
         
-    private Gtk.FileSelection fileOpenDialog;
+    // Widgets from fileOpenDialogGlade
+    [Glade.Widget] Gtk.FileSelection fileOpenDialog;
+    
     private LogWrapper logWrapper;
+    private ListStore slicesStore = null;
+    
+    private ArrayList slicesArray;
+    private LogWrapper result = new LogWrapper();
+    private string saveFilename = "";
     
     public GUI(string[] args)
     {
         Application.Init();
 
-        Glade.XML mainGlade = 
-            new Glade.XML(null, "gui.glade", "mainWindow", null);
-        mainGlade.Autoconnect(this);
+        Glade.XML mainWindowGlade = new Glade.XML(null, "gui.glade",
+                "mainWindow", null);
+        mainWindowGlade.Autoconnect(this);
 
-        // Handle the fileOpenDialog for opening log files.
-        this.fileOpenDialog = new FileSelection(Drohne.i18n("Open Log File"));
+        Glade.XML aboutDialogGlade = new Glade.XML(null, "gui.glade",
+                "aboutDialog", null);
+        aboutDialogGlade.Autoconnect(this);
+
+        Glade.XML fileSaveDialogGlade = new Glade.XML(null, "gui.glade",
+                "fileSaveDialog", null);
+        fileSaveDialogGlade.Autoconnect(this);
+
+        Glade.XML fileOpenDialogGlade = new Glade.XML(null, "gui.glade",
+                "fileOpenDialog", null);
+        fileOpenDialogGlade.Autoconnect(this);
+       
         this.fileOpenDialog.SelectMultiple = true;
-            
-        this.fileOpenDialog.CancelButton.Clicked += new EventHandler(
-                OnFileOpenDialogCancelClicked);
-        
-        this.fileOpenDialog.OkButton.Clicked += new EventHandler(
-                OnFileOpenDialogOkClicked);
+        this.SetupSlicesTreeView();
         
         Application.Run();
     }
 
-    /* The following methods are handlers for the signals defined in Glade.
-     * They are autoconnected with the signals by Glade.XML.Autoconnect().
-     */ 
+    /*************************
+     * begin signal handlers *
+     *************************/
+
+    /*
+     * signal handlers for mainWindow
+     */
     public void OnMainWindowDeleteEvent(object obj, DeleteEventArgs args)
     {
         Application.Quit();
         args.RetVal = true;
     }
-    
-    public void OnMenuFileQuitActivate(object obj, EventArgs args)
-    {
-        Application.Quit();
-    }
 
+    /*
+     * signal handlers for menubar
+     */
     public void OnMenuFileOpenActivate(object obj, EventArgs args)
     {
         if ((ResponseType) this.fileOpenDialog.Run() != ResponseType.Ok)
@@ -76,12 +98,60 @@ public class GUI
         }
     }
 
-    public void OnFileOpenDialogCancelClicked(object obj, EventArgs args)
+    public void OnMenuFileSaveActivate(object obj, EventArgs args)
     {
-        this.fileOpenDialog.Hide();
+        if (this.saveFilename == "")
+        {
+            this.OnMenuFileSaveAsActivate(obj, args);
+            return;
+        }
+        
+        this.GetSelectedSlices();
+        this.result.WriteFile(this.saveFilename, false);
     }
 
-    public void OnFileOpenDialogOkClicked(object obj, EventArgs args)
+    public void OnMenuFileSaveAsActivate(object obj, EventArgs args)
+    {
+        this.fileSaveDialog.Filename = this.GetSaveFilename();
+
+        if ((ResponseType) this.fileSaveDialog.Run() != ResponseType.Ok)
+        {
+            this.fileSaveDialog.Hide();
+            return;
+        }
+    }
+
+    public void OnMenuFileQuitActivate(object obj, EventArgs args)
+    {
+        Application.Quit();
+    }
+
+    public void OnMenuHelpAboutActivate(object obj, EventArgs args)
+    {
+        this.aboutDialog.Show();
+    }
+    
+    /*
+     * signal handlers for fileSaveDialog   
+     */
+    public void OnFileSaveDialogOkButtonClicked(object obj, EventArgs args)
+    {
+        this.saveFilename = this.fileSaveDialog.Filename;
+        this.fileSaveDialog.Hide();
+
+        this.OnMenuFileSaveActivate(obj, args);
+    }
+   
+    public void OnFileSaveDialogCancelButtonClicked(object obj, EventArgs args)
+    {
+        this.fileSaveDialog.Hide();
+        this.saveFilename = "";
+    }
+
+    /*
+     * signal handlers for fileOpenDialog
+     */
+    public void OnFileOpenDialogOkButtonClicked(object obj, EventArgs args)
     {
         this.logWrapper = new LogWrapper();
         string[] selections = this.fileOpenDialog.Selections;
@@ -151,6 +221,102 @@ public class GUI
         this.statusbar.Push(1, statusStr);
         
         this.fileOpenDialog.Hide();
+
+        this.saveFilename = "";
+
+        this.PopulateSlicesTreeView();
+    }
+
+    public void OnFileOpenDialogCancelButtonClicked(object obj, EventArgs args)
+    {
+        this.fileOpenDialog.Hide();
+    }
+
+    /***********************
+     * end signal handlers *
+     ***********************/
+    
+    private string GetSaveFilename()
+    {
+        string filename = "drohne.txt";
+        if (this.logWrapper == null)
+            return filename;
+
+        filename = String.Format("drohne_{0}-{1}.txt",
+                this.logWrapper.start.ToString("yyyyMMdd"),
+                this.logWrapper.end.ToString("yyyyMMdd"));
+
+        return filename;    
+    }
+
+    private void SetupSlicesTreeView()
+    {
+        this.slicesStore = new ListStore(typeof(bool),
+                typeof(string), typeof(string));
+                
+        this.slicesTreeView.Model = slicesStore;
+         
+        CellRendererToggle crt = new CellRendererToggle(); 
+        crt.Activatable = true;
+        crt.Toggled += CellRendererToggleToggled;           
+         
+        this.slicesTreeView.AppendColumn(Drohne.i18n("Select"),
+                crt, "active", 0);
+
+        this.slicesTreeView.AppendColumn(Drohne.i18n("Log Start"),
+                new CellRendererText(), "text", 1);
+        
+        this.slicesTreeView.AppendColumn(Drohne.i18n("Log End"),
+                new CellRendererText(), "text", 2);
+    }
+    
+    private void CellRendererToggleToggled(object obj, ToggledArgs args)
+    {
+        TreeIter iter;
+        if (this.slicesStore.GetIter(out iter, new TreePath(args.Path)))
+        {
+            bool old = (bool) this.slicesStore.GetValue(iter, 0);
+            this.slicesStore.SetValue(iter, 0, !old);
+        }
+    }
+
+    private void PopulateSlicesTreeView()
+    {
+        this.slicesStore.Clear();
+        
+        TimeSpan breakTime = new TimeSpan(24, 0, 0);
+        this.slicesArray = this.logWrapper.SplitByBreak(breakTime);
+        
+        foreach (LogBase slice in this.slicesArray)
+        {
+            this.slicesStore.AppendValues(true, slice.start.ToString(),
+                    slice.end.ToString());
+        }
+    }
+
+    private void GetSelectedSlices()
+    {
+        this.result.Clear();
+        this.slicesStore.Foreach(AppendSliceForeachSelected);
+        
+        if (this.logWrapper == null)
+            return;
+                
+        this.result.CreateLogInstance(this.logWrapper.Format);
+        this.result.ReverseSync();
+    }
+    
+    private bool AppendSliceForeachSelected(TreeModel model, TreePath path,
+            TreeIter iter)
+    {   
+        bool selected = (bool) this.slicesStore.GetValue(iter, 0);
+        if (selected)
+        {
+            // *shudder* It's ugly but works.
+            int row = Int16.Parse(path.ToString());
+            this.result.Append((LogBase) this.slicesArray[row]);
+        }
+        // Return false to keep Foreach going.
+        return false;
     }
 }
-

@@ -52,6 +52,7 @@ public class Drohne
         }
     }
 
+    /*
     private static void TestBench()
     {
         LogWrapper log_gprmc = new LogWrapper();
@@ -85,4 +86,5 @@ public class Drohne
         foreach (LogBase slice in oziexp_slices)
             Console.WriteLine(slice);
     }
+    */
 }
