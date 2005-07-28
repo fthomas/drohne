@@ -14,13 +14,13 @@ MCS_OPTIONS = -debug+
 all: bin/drohne.exe doc/drohne.1 po/drohne.pot
 
 bin/drohne.exe: $(SOURCES) $(RESOURCES)
-	mcs $(MCS_OPTIONS) -out:"bin/drohne.exe" -target:exe $(RESOURCES_BUILD) $(PKG_REFERENCES_BUILD) $(SOURCES)
+	mcs $(MCS_OPTIONS) -out:"$@" -target:exe $(RESOURCES_BUILD) $(PKG_REFERENCES_BUILD) $(SOURCES)
 
 doc/drohne.1: doc/manpage.xml
 	cd doc && docbook2x-man $(notdir $<)
 
-po/drohne.pot:
-	xgettext -ki18n --from-code=UTF-8 $(SOURCES) $(RESOURCES) -o po/drohne.pot
+po/drohne.pot: $(SOURCES) $(RESOURCES)
+	xgettext -ki18n --from-code=UTF-8 $(SOURCES) $(RESOURCES) -o $@
 
 clean:
 	rm -rf bin/drohne.exe*
@@ -30,7 +30,7 @@ clean:
 DESTDIR =
 PREFIX = /usr/local
 
-install: drohne.exe
+install: bin/drohne.exe doc/drohne.1
 	install -D bin/drohne.sh $(DESTDIR)$(PREFIX)/bin/drohne
 	install -D bin/drohne.exe $(DESTDIR)$(PREFIX)/lib/drohne/drohne.exe
 	install -D src/drohne.desktop $(DESTDIR)$(PREFIX)/share/applications/drohne.desktop
