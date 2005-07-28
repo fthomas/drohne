@@ -2,5 +2,5 @@
 Encoding=UTF-8
 Name=Drohne
 Type=Application
-Categories=Utility;GTK
+Categories=Utility
 Exec=drohne

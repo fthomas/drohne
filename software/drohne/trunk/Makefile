@@ -6,12 +6,11 @@ SOURCES = \
 RESOURCES = \
  src/gui.glade
 
+build: bin/drohne.exe doc/drohne.1 po/drohne.pot
+
 RESOURCES_BUILD = $(foreach res,$(RESOURCES),$(addprefix -resource:,$(res)),$(notdir $(res)))
 PKG_REFERENCES_BUILD = -pkg:gtk-sharp,glade-sharp
-
 MCS_OPTIONS = -debug+
-
-all: bin/drohne.exe doc/drohne.1 po/drohne.pot
 
 bin/drohne.exe: $(SOURCES) $(RESOURCES)
 	mcs $(MCS_OPTIONS) -out:"$@" -target:exe $(RESOURCES_BUILD) $(PKG_REFERENCES_BUILD) $(SOURCES)
