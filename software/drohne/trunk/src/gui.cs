@@ -126,7 +126,11 @@ public class GUI
     {
         Application.Quit();
     }
-
+    
+    public void OnMenuEditPreferencesActivate(object obj, EventArgs args)
+    {
+    }
+    
     public void OnMenuHelpAboutActivate(object obj, EventArgs args)
     {
         this.aboutDialog.Show();

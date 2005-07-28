@@ -15,6 +15,7 @@ DEB_MAKE_CHECK_TARGET :=
 
 common-binary-indep::
 	dh_clideps
+	dh_desktop
 
 clean::
 	rm -rf $(CURDIR)/debian/.wapi

@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2005-07-27 18:35+0200\n"
+"POT-Creation-Date: 2005-07-28 02:07+0200\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -16,35 +16,35 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 
-#: src/gui.cs:197
+#: src/gui.cs:201
 msgid "Loaded Files"
 msgstr ""
 
-#: src/gui.cs:198
+#: src/gui.cs:202
 msgid "Log Format"
 msgstr ""
 
-#: src/gui.cs:224
+#: src/gui.cs:228
 msgid "Different log format detected"
 msgstr ""
 
-#: src/gui.cs:237
+#: src/gui.cs:241
 msgid "Unknown log format"
 msgstr ""
 
-#: src/gui.cs:275
+#: src/gui.cs:279
 msgid "Select"
 msgstr ""
 
-#: src/gui.cs:278
+#: src/gui.cs:282
 msgid "Log Start"
 msgstr ""
 
-#: src/gui.cs:281
+#: src/gui.cs:285
 msgid "Log End"
 msgstr ""
 
-#: src/gui.glade:8 src/gui.glade:204
+#: src/gui.glade:8 src/gui.glade:225
 msgid "Drohne"
 msgstr ""
 
@@ -53,29 +53,37 @@ msgid "_File"
 msgstr ""
 
 #: src/gui.glade:92
-msgid "_Help"
+msgid "_Edit"
 msgstr ""
 
 #: src/gui.glade:101
+msgid "_Preferences"
+msgstr ""
+
+#: src/gui.glade:114
+msgid "_Help"
+msgstr ""
+
+#: src/gui.glade:123
 msgid "_About"
 msgstr ""
 
-#: src/gui.glade:160
-msgid "Slice Selection"
+#: src/gui.glade:181
+msgid "label1"
 msgstr ""
 
-#: src/gui.glade:205
+#: src/gui.glade:226
 msgid "Copyright © 2003, 2005 Frank S. Thomas"
 msgstr ""
 
-#: src/gui.glade:207
+#: src/gui.glade:228
 msgid "translator-credits"
 msgstr ""
 
-#: src/gui.glade:212
+#: src/gui.glade:233
 msgid "Save Log File"
 msgstr ""
 
-#: src/gui.glade:251
+#: src/gui.glade:272
 msgid "Open Log Files"
 msgstr ""

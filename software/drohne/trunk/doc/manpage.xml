@@ -1,0 +1,144 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE refentry PUBLIC "-//OASIS//DTD DocBook XML V4.2//EN"
+"file:///usr/share/xml/docbook/schema/dtd/4.2/docbookx.dtd" [
+
+  <!ENTITY dhfirstname "<firstname>Frank</firstname>">
+  <!ENTITY dhsurname   "<surname>Thomas</surname>">
+  <!ENTITY dhusername  "Frank S. Thomas">
+  <!ENTITY dhemail     "<email>frank@thomas-alfeld.de</email>">
+  <!ENTITY dhpackage   "drohne">
+  <!ENTITY dhdate      "<date>March 24, 2005</date>">
+
+  <!ENTITY debian      "<productname>Debian</productname>">
+  <!ENTITY gnu         "<acronym>GNU</acronym>">
+]>
+
+<!--
+  This is the manual page for KBoincSpy.
+  
+  This file is licensed under the terms of the GNU General Public License,
+  Version 2 or any later version published by the Free Software Foundation.
+
+  Copyright 2004-2005 Frank S. Thomas <frank@thomas-alfeld.de>
+-->
+
+<refentry>
+  <refentryinfo>
+    <address>
+      &dhemail;
+    </address>
+    <author>
+      &dhfirstname;
+      &dhsurname;  
+    </author>
+    <copyright>
+      <year>2004-2005</year>
+      <holder>&dhusername;</holder>
+    </copyright>
+    &dhdate;
+  </refentryinfo>
+  
+  <refmeta>
+    <refentrytitle>drohne</refentrytitle>
+    <manvolume>1</manvolume>
+  </refmeta>
+
+  <refnamediv>
+    <refname>KBoincSpy</refname>
+    <refpurpose>A BOINC monitoring tool for KDE</refpurpose>
+  </refnamediv>
+  
+  <refsynopsisdiv>
+    <cmdsynopsis>
+      <command>&dhpackage;</command>
+      <arg><replaceable>Qt-options</replaceable></arg>
+      <arg><replaceable>KDE-options</replaceable></arg>
+      <arg><replaceable>URL</replaceable></arg>
+    </cmdsynopsis>
+  </refsynopsisdiv>
+
+  <refsect1>
+    <title>DESCRIPTION</title>
+    <para>KBoincSpy is a KDE monitor and control utility for the BOINC client.
+      It displays a lot of useful information about the computation of work
+      units, such as the percent of work done, and estimates of the completion
+      time and credits granted. It can be also used to control the behavior of
+      the BOINC client, allowing the user to attach to (as well as detach from)
+      projects, start/stop the computation, or suspend all network
+      communications.</para>
+  </refsect1>
+
+  <refsect1>
+    <title>OPTIONS</title>
+    <para>For a full summary of options, run <command>kboincspy 
+      --help-all</command>.</para>
+      
+    <variablelist>
+      <varlistentry>
+        <term><option>--help</option></term>
+        <listitem>
+          <para>Show help about options</para>
+        </listitem>
+      </varlistentry>
+      
+      <varlistentry>
+        <term><option>--help-qt</option></term>
+        <listitem>
+          <para>Show Qt specific options</para>
+        </listitem>
+      </varlistentry>
+      
+      <varlistentry>
+        <term><option>--help-kde</option></term>
+        <listitem>
+          <para>Show KDE specific options</para>
+        </listitem>
+      </varlistentry>
+      
+      <varlistentry>
+        <term><option>--help</option></term>
+        <listitem>
+          <para>Show all options</para>
+        </listitem>
+      </varlistentry>
+    </variablelist>
+  </refsect1>
+
+  <refsect1>
+    <title>ARGUMENTS</title>
+    <variablelist>
+      <varlistentry>
+        <term><option>URL</option></term>
+        <listitem>
+          <para>The location of a BOINC client working directory. URL can be a
+            pathname (relative or absolute) or a KIO slave URL, which allows
+            KBoincSpy to monitor remote BOINC clients.</para>          
+        </listitem>
+      </varlistentry>
+    </variablelist>
+  </refsect1>
+
+  <refsect1>
+    <title>SEE ALSO</title>
+    <para>Full user documentation is available through the KDE Help Center.
+      You can also enter the URL <ulink url="help:/kboincspy"
+      >help:/kboincspy</ulink> directly into
+      <productname>Konqueror</productname> or you can run 
+      <command>khelpcenter help:/kboincspy</command> from the
+      command-line.</para>
+    <para>Homepage: <ulink url="http://kboincspy.sourceforge.net"
+      >http://kboincspy.sf.net</ulink></para>
+  </refsect1>
+
+  <refsect1>
+    <title>AUTHOR</title>
+    <para>KBoincSpy was written by Roberto A. Virga 
+      &lt;<email>rvirga@users.sourceforge.net</email>&gt;.</para>
+    <para>This manual page was written by &dhusername; &lt;&dhemail;&gt; for
+      the &debian; project (but may be used by others). Permission is granted
+      to copy, distribute and/or modify this document under the terms of the
+      &gnu; General Public License, Version 2 any later version published by
+      the Free Software Foundation.</para>
+  </refsect1>
+  
+</refentry>

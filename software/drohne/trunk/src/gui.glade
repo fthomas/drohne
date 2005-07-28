@@ -9,8 +9,8 @@
   <property name="type">GTK_WINDOW_TOPLEVEL</property>
   <property name="window_position">GTK_WIN_POS_NONE</property>
   <property name="modal">False</property>
-  <property name="default_width">400</property>
-  <property name="default_height">300</property>
+  <property name="default_width">440</property>
+  <property name="default_height">360</property>
   <property name="resizable">True</property>
   <property name="destroy_with_parent">False</property>
   <property name="decorated">True</property>
@@ -87,6 +87,28 @@
 	  </child>
 
 	  <child>
+	    <widget class="GtkMenuItem" id="edit1">
+	      <property name="visible">True</property>
+	      <property name="label" translatable="yes">_Edit</property>
+	      <property name="use_underline">True</property>
+
+	      <child>
+		<widget class="GtkMenu" id="edit1_menu">
+
+		  <child>
+		    <widget class="GtkMenuItem" id="preferences1">
+		      <property name="visible">True</property>
+		      <property name="label" translatable="yes">_Preferences</property>
+		      <property name="use_underline">True</property>
+		      <signal name="activate" handler="OnMenuEditPreferencesActivate" last_modification_time="Wed, 27 Jul 2005 23:18:50 GMT"/>
+		    </widget>
+		  </child>
+		</widget>
+	      </child>
+	    </widget>
+	  </child>
+
+	  <child>
 	    <widget class="GtkMenuItem" id="help1">
 	      <property name="visible">True</property>
 	      <property name="label" translatable="yes">_Help</property>
@@ -118,9 +140,8 @@
       <child>
 	<widget class="GtkNotebook" id="notebook">
 	  <property name="visible">True</property>
-	  <property name="can_focus">True</property>
-	  <property name="show_tabs">True</property>
-	  <property name="show_border">True</property>
+	  <property name="show_tabs">False</property>
+	  <property name="show_border">False</property>
 	  <property name="tab_pos">GTK_POS_TOP</property>
 	  <property name="scrollable">False</property>
 	  <property name="enable_popup">False</property>
@@ -157,7 +178,7 @@
 	  <child>
 	    <widget class="GtkLabel" id="label1">
 	      <property name="visible">True</property>
-	      <property name="label" translatable="yes">Slice Selection</property>
+	      <property name="label" translatable="yes">label1</property>
 	      <property name="use_underline">False</property>
 	      <property name="use_markup">False</property>
 	      <property name="justify">GTK_JUSTIFY_LEFT</property>

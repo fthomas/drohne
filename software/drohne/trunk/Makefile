@@ -1,26 +1,34 @@
-SOURCES = src/main.cs src/gui.cs src/log.cs
-RESOURCES = src/gui.glade
+SOURCES = \
+ src/main.cs \
+ src/gui.cs \
+ src/log.cs
+    
+RESOURCES = \
+ src/gui.glade
 
-RESOURCES_BUILD = $(foreach res,$(RESOURCES), $(addprefix -resource:,$(res)),$(notdir $(res)))
+RESOURCES_BUILD = $(foreach res,$(RESOURCES),$(addprefix -resource:,$(res)),$(notdir $(res)))
 PKG_REFERENCES_BUILD = -pkg:gtk-sharp,glade-sharp
 
 MCS_OPTIONS = -debug+
 
-all: drohne.exe package-messages
+all: bin/drohne.exe doc/drohne.1 po/drohne.pot
 
-drohne.exe: $(SOURCES) $(RESOURCES)
-	mcs $(MCS_OPTIONS) -out:"bin/drohne.exe" -target:exe \
-	 $(RESOURCES_BUILD) $(PKG_REFERENCES_BUILD) $(SOURCES)
+bin/drohne.exe: $(SOURCES) $(RESOURCES)
+	mcs $(MCS_OPTIONS) -out:"bin/drohne.exe" -target:exe $(RESOURCES_BUILD) $(PKG_REFERENCES_BUILD) $(SOURCES)
 
-package-messages:
+doc/drohne.1: doc/manpage.xml
+	cd doc && docbook2x-man $(notdir $<)
+
+po/drohne.pot:
 	xgettext -ki18n --from-code=UTF-8 $(SOURCES) $(RESOURCES) -o po/drohne.pot
 
 clean:
 	rm -rf bin/drohne.exe*
+	rm -f doc/drohne.1
 	-for backup in `find -name *.bak`; do rm $$backup; done
 
-DESTDIR=
-PREFIX=/usr/local
+DESTDIR =
+PREFIX = /usr/local
 
 install: drohne.exe
 	install -D bin/drohne.sh $(DESTDIR)$(PREFIX)/bin/drohne
