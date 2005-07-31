@@ -4,6 +4,7 @@ PREFIX = /usr/local
 SOURCES = \
  src/main.cs \
  src/gui.cs \
+ src/helpers.cs \
  src/log.cs
     
 RESOURCES = \
@@ -32,6 +33,6 @@ clean:
 
 install: build
 	install -D -m755 -p bin/drohne.sh $(DESTDIR)$(PREFIX)/bin/drohne
-	install -D -m755 -p bin/drohne.exe $(DESTDIR)$(PREFIX)/lib/drohne/drohne.exe
+	install -D -m644 -p bin/drohne.exe $(DESTDIR)$(PREFIX)/lib/drohne/drohne.exe
 	install -D -m644 -p src/drohne.desktop $(DESTDIR)$(PREFIX)/share/applications/drohne.desktop
 	install -D -m644 -p doc/drohne.1.gz $(DESTDIR)$(PREFIX)/share/man/man1/drohne.1.gz

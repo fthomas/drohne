@@ -45,6 +45,8 @@ public class GUI
 
     private ListStore slicesStore = null;
     private ArrayList slicesArray = null;
+
+    private Filename saveFilename = new Filename();
     
     public GUI(string[] args)
     {
@@ -95,27 +97,26 @@ public class GUI
 
     public void OnMenuFileSaveActivate(object obj, EventArgs args)
     {
-        /*
-        if (this.saveFilename == "")
+        if (this.saveFilename.IsEmpty())
         {
             this.OnMenuFileSaveAsActivate(obj, args);
             return;
         }
-        */
-        //this.GetSelectedSlices();
-        //this.resultLog.WriteFile(this.saveFilename, false);
+        
+        this.GetSelectedSlices();
+        this.resultLog.WriteFile(this.saveFilename.Filename, false);
     }
 
     public void OnMenuFileSaveAsActivate(object obj, EventArgs args)
     {
         
-        /*this.fileSaveDialog.Filename = this.GetSaveFilename();
+        this.fileSaveDialog.Filename = this.saveFilename.Filename;
 
         if ((ResponseType) this.fileSaveDialog.Run() != ResponseType.Ok)
         {
             this.fileSaveDialog.Hide();
             return;
-        }*/
+        }
     }
 
     public void OnMenuFileQuitActivate(object obj, EventArgs args)
@@ -137,18 +138,16 @@ public class GUI
      **************************************/
     public void OnFileSaveDialogOkButtonClicked(object obj, EventArgs args)
     {
-        /*
-        this.saveFilename = this.fileSaveDialog.Filename;
+        this.saveFilename.Filename = this.fileSaveDialog.Filename;
         this.fileSaveDialog.Hide();
 
         this.OnMenuFileSaveActivate(obj, args);
-        */
     }
    
     public void OnFileSaveDialogCancelButtonClicked(object obj, EventArgs args)
     {
-        //this.fileSaveDialog.Hide();
-        //this.saveFilename = "";
+        this.fileSaveDialog.Hide();
+        this.saveFilename.ResetFilename();
     }
 
     /**************************************

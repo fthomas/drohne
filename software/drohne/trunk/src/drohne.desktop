@@ -1,6 +1,8 @@
 [Desktop Entry]
 Encoding=UTF-8
-Name=Drohne
 Type=Application
 Categories=Utility
 Exec=drohne
+Name=Drohne
+GenericName=?
+Comment=?
