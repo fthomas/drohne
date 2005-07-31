@@ -108,8 +108,8 @@ public class GUI
 
     public void OnMenuFileSaveAsActivate(object obj, EventArgs args)
     {
-        /*
-        this.fileSaveDialog.Filename = this.GetSaveFilename();
+        
+        /*this.fileSaveDialog.Filename = this.GetSaveFilename();
 
         if ((ResponseType) this.fileSaveDialog.Run() != ResponseType.Ok)
         {
@@ -315,17 +315,13 @@ public class GUI
         }
     }
     
-    
-    /*
     private void GetSelectedSlices()
     {
         if (this.totalLog == null)
             return;
-
-        this.resultLog = new LogWrapper();
-
-        // Iterate over the ListStore and append to this.result all slices
-        // that are marked as selected.
+        
+        this.resultLog = LogBase.CreateLogInstance(this.totalLog.Format);
+        
         for (int i = 0; i < this.slicesArray.Count; i++)
         {
             TreeIter iter;
@@ -335,14 +331,8 @@ public class GUI
             {
                 bool selected = (bool) this.slicesStore.GetValue(iter, 1);
                 if (selected)
-                {
                     this.resultLog.Append((LogBase) this.slicesArray[i]);
-                }
             }
         }
-                
-        this.resultLog.CreateLogInstance(this.totalLog.Format);
-        this.resultLog.ReverseSync();
     }
-    */
 }

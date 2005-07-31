@@ -161,8 +161,7 @@ public class LogBase
                     sw.WriteLine(EntryToString(dataEntry));
             }
         }
-        
-        if (append == true)
+        else
         {
             using (StreamWriter sw = File.AppendText(filename))
             {
@@ -237,21 +236,27 @@ public class LogBase
         return format;
     }
 
-    public static LogBase CreateLogInstanceFromFile
-        (string filename, LogFormat format)
+    public static LogBase CreateLogInstance(LogFormat format)
     {
         LogBase logInstance = null;
         switch (format)
         {
             case LogFormat.GPRMC:
-                logInstance = new LogGPRMC(); 
+                logInstance = new LogGPRMC();
                 break;
-                
+            
             case LogFormat.OziExplorer:
                 logInstance = new LogOziExplorer();
                 break;
         }
 
+        return logInstance;
+    }
+    
+    public static LogBase CreateLogInstanceFromFile
+        (string filename, LogFormat format)
+    {
+        LogBase logInstance = LogBase.CreateLogInstance(format);
         logInstance.ReadFile(filename);
         return logInstance;
     }
@@ -273,20 +278,17 @@ public class LogGPRMC: LogBase
             
             this.dataArray.Add(dataEntry);
 
-            // Use DateTime of first entry for the time range.
             if (dataArray.Count == 1)
             {
                 this.start = (DateTime) dataEntry["GenDateTime"];
                 this.end = (DateTime) dataEntry["GenDateTime"];
             }
-            // And update the time range with every entry.
             this.UpdateLogStartEnd((DateTime) dataEntry["GenDateTime"]);
         }
     }
 
     public static bool IsLogEntry(string line, ref Hashtable dataEntry)
     {
-        // This regex matches a single "GPRMC" line.
         string pattern = @"\$GPRMC,(\d{6}),(A|V),(\d{4}\.\d{0,4}),(N|S),"
             + @"(\d{5}\.\d{0,4}),(E|W),(\d+\.\d{0,2}),(\d+\.\d{0,2}),"
             + @"(\d{6}),(\d*\.?\d*),(E|W)?\*((\d|\w){0,2})";
@@ -296,7 +298,6 @@ public class LogGPRMC: LogBase
         if (!lineMatch.Success)
             return false;
         
-        // These fields are specific to LogFormat.GPRMC.
         dataEntry["UTCTime"] = lineMatch.Groups[1].ToString();
         dataEntry["Status"] = lineMatch.Groups[2].ToString();
         dataEntry["Latitude"] = lineMatch.Groups[3].ToString();
@@ -310,7 +311,6 @@ public class LogGPRMC: LogBase
         dataEntry["MagVarEWInd"] = lineMatch.Groups[11].ToString();
         dataEntry["Checksum"] = lineMatch.Groups[12].ToString();
         
-        // The following fields are generic along all LogFormats.
         dataEntry["GenLogFormat"] = LogFormat.GPRMC;
         dataEntry["GenDateTime"] = LogGPRMC.GetEntryDateTime(
                 dataEntry["UTCTime"].ToString(),
@@ -341,13 +341,8 @@ public class LogGPRMC: LogBase
         int second = int.Parse(utcTime.Substring(4, 2));
 
         // This code expires on 2066. ;-)
-	//year += (year > 65) ? 1900 : 2000;
-	
-        if (year > 65)
-            year += 1900;
-        else
-            year += 2000;
-
+        year += (year > 65) ? 1900 : 2000;
+        
         return new DateTime(year, month, day, hour, minute, second);
     }
 }
@@ -368,20 +363,17 @@ public class LogOziExplorer: LogBase
 
             this.dataArray.Add(dataEntry);
 
-            // Use DateTime of first entry for the time range.
             if (dataArray.Count == 1)
             {
                 this.start = (DateTime) dataEntry["GenDateTime"];
                 this.end = (DateTime) dataEntry["GenDateTime"];
             }
-            // And update the time range with every entry.
             this.UpdateLogStartEnd((DateTime) dataEntry["GenDateTime"]);
         }
     }
 
     public static bool IsLogEntry(string line, ref Hashtable dataEntry)
     {
-        // This regex matches a single "OziExplorer Track File" line.
         string pattern = @"(\-?\d{1,3}\.\d+),(\-?\d{1,3}\.\d+),(0|1),"
             + @"(\-?\d+),(\d+\.\d+),(\d{2}\-\D{3}\-\d{2}),(\d{2}:\d{2}:\d{2}),"
             + @"(\d{1,2})?,(\d\.\d)?,([23]{1}D)?";
@@ -391,7 +383,6 @@ public class LogOziExplorer: LogBase
         if (!lineMatch.Success)
             return false;
        
-        // These fields are specific to LogFormat.OziExplorer.
         dataEntry["Latitude"] = lineMatch.Groups[1].ToString();
         dataEntry["Longitude"] = lineMatch.Groups[2].ToString();
         dataEntry["Code"] = lineMatch.Groups[3].ToString();
@@ -403,7 +394,6 @@ public class LogOziExplorer: LogBase
         NumberFormatInfo numberFormat = new NumberFormatInfo();
         numberFormat.NumberDecimalSeparator = ".";
         
-        // The following fields are generic along all LogFormats.
         dataEntry["GenLogFormat"] = LogFormat.OziExplorer;
         dataEntry["GenDateTime"] = LogOziExplorer.GetEntryDateTime(
                 Double.Parse(dataEntry["Date"].ToString(), numberFormat));
