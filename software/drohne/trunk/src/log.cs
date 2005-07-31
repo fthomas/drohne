@@ -1,6 +1,6 @@
 /***************************************************************************
  *   Copyright (C) 2003,2005 Frank S. Thomas                               *
- *                           <frank@thomas-alfeld.de>                      *
+ *   frank@thomas-alfeld.de                                                *
  *                                                                         *
  *   This program is free software; you can redistribute it and/or modify  *
  *   it under the terms of the GNU General Public License as published by  *
@@ -25,6 +25,13 @@ using System.Globalization;
 using System.IO;
 using System.Text.RegularExpressions;
 
+public enum LogFormat
+{
+    Unknown,
+    GPRMC,
+    OziExplorer
+}
+
 public class LogBase
 {
     public ArrayList dataArray = new ArrayList();
@@ -40,6 +47,20 @@ public class LogBase
         this.end = end;
     }
 
+    public virtual void ParseStringData(string dataString)
+    {
+        Console.WriteLine("Warning: calling virtual method {0}",
+                "LogBase.ParseStringData()");
+        return;
+    }
+
+    public void Clear()
+    {
+        this.dataArray.Clear();
+        this.start = new DateTime(0);
+        this.end = new DateTime(0);
+    }
+
     public void Append(LogBase newLog)
     {
         this.dataArray.AddRange(newLog.dataArray);
@@ -50,16 +71,7 @@ public class LogBase
         if (this.end < newLog.end)
             this.end = newLog.end;
     }
-
-    public void Clear()
-    {
-        this.dataArray.Clear();
-        this.start = new DateTime(0);
-        this.end = new DateTime(0);
-    }
  
-    public virtual void ParseData(string dataString){} 
-
     public void UpdateLogStartEnd(DateTime dateTime)
     {
         if (this.start > dateTime)
@@ -109,9 +121,6 @@ public class LogBase
             
             dayPlus1 = (DateTime) dataEntry["GenDateTime"];
 
-            // Add a slice to the logSliceArray if breakTime is greater than
-            // the time span between two dataEntries or the last entry in
-            // this.dataArray is reached.
             if (dayPlus1 - dayPlus0 > breakTime || i == count)
             {
                 splitEnd = dayPlus0;
@@ -123,14 +132,13 @@ public class LogBase
         }
         return logSliceArray;
     }
-    
+
     public void ReadFile(string filename)
     {
         using (StreamReader sr = new StreamReader(filename))
         {
-            // Reading the whole file is not the best idea.
             string fileContent = sr.ReadToEnd();
-            this.ParseData(fileContent);
+            this.ParseStringData(fileContent);
         }
     }
 
@@ -161,7 +169,12 @@ public class LogBase
         }
     }
 
-    public virtual string EntryToString(Hashtable dataEntry){return "";}
+    public virtual string EntryToString(Hashtable dataEntry)
+    {
+        Console.WriteLine("Warning: calling virtual method {0}",
+                "LogBase.EntryToString()");
+        return "";
+    }
 
     public override string ToString()
     {
@@ -179,12 +192,49 @@ public class LogBase
         }
         return str;
     }
+
+    public static LogFormat DetectLogFormatFromFile(string filename)
+    {
+        using (StreamReader sr = new StreamReader(filename))
+        {
+            int c = 0, i = 0;
+            const int maxChars = 32768;
+            char[] buffer = new char[maxChars];
+            
+            while ((c = sr.Read()) != -1 && i < maxChars)
+                buffer[i++] = (char) c;
+                
+            string partialFileContent = new String(buffer);
+            return LogBase.DetectLogFormatFromString(ref partialFileContent);
+        }
+    }
+
+    public static LogFormat DetectLogFormatFromString(ref string dataString)
+    {
+        Hashtable dummyEntry = new Hashtable();
+        LogFormat format = LogFormat.Unknown;
+        
+        string[] lines = dataString.Split('\n');
+        
+        foreach (string line in lines)
+        {   
+            if (LogGPRMC.IsLogEntry(line, ref dummyEntry))
+            {
+                format = LogFormat.GPRMC;
+                break;
+            }
+
+            if (LogOziExplorer.IsLogEntry(line, ref dummyEntry))
+            {
+                format = LogFormat.OziExplorer;
+                break;
+            }
+        }
+
+        return format;
+    }
 }
 
-public enum LogFormat
-{
-    Unknown, GPRMC, OziExplorer
-}
 
 public class LogWrapper: LogBase
 {
@@ -196,10 +246,10 @@ public class LogWrapper: LogBase
         get { return logFormat; }
     }
     
-    public override void ParseData(string dataString)
+    public override void ParseStringData(string dataString)
     {
         this.CreateLogInstance(ref dataString);
-        this.logInstance.ParseData(dataString);
+        this.logInstance.ParseStringData(dataString);
         this.Sync();
     }
 
@@ -272,9 +322,10 @@ public class LogWrapper: LogBase
     }
 }
 
+
 public class LogGPRMC: LogBase
 { 
-    public override void ParseData(string dataString)
+    public override void ParseStringData(string dataString)
     {
         string[] lines = dataString.Split('\n');
         foreach (string line in lines)
@@ -353,6 +404,8 @@ public class LogGPRMC: LogBase
         int second = int.Parse(utcTime.Substring(4, 2));
 
         // This code expires on 2066. ;-)
+	//year += (year > 65) ? 1900 : 2000;
+	
         if (year > 65)
             year += 1900;
         else
@@ -364,7 +417,7 @@ public class LogGPRMC: LogBase
 
 public class LogOziExplorer: LogBase
 {
-    public override void ParseData(string dataString)
+    public override void ParseStringData(string dataString)
     {
         string[] lines = dataString.Split('\n');
         foreach (string line in lines)

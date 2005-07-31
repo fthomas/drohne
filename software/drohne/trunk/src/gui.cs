@@ -1,6 +1,6 @@
 /***************************************************************************
  *   Copyright (C) 2005 Frank S. Thomas                                    *
- *                      <frank@thomas-alfeld.de>                           *
+ *   frank@thomas-alfeld.de                                                *
  *                                                                         *
  *   This program is free software; you can redistribute it and/or modify  *
  *   it under the terms of the GNU General Public License as published by  *
@@ -40,8 +40,8 @@ public class GUI
     // Widgets from fileOpenDialogGlade
     [Glade.Widget] Gtk.FileSelection fileOpenDialog;
     
-    private LogWrapper totalLog = null;
-    private LogWrapper resultLog = null;
+    private LogBase totalLog = null;
+    private LogBase resultLog = null;
 
     private ListStore slicesStore = null;
     private ArrayList slicesArray = null;
@@ -107,7 +107,7 @@ public class GUI
             return;
         }
         
-        this.GetSelectedSlices();
+        //this.GetSelectedSlices();
         this.resultLog.WriteFile(this.saveFilename, false);
     }
 
@@ -158,55 +158,41 @@ public class GUI
      */
     public void OnFileOpenDialogOkButtonClicked(object obj, EventArgs args)
     {
-        this.totalLog = new LogWrapper();
         string[] selections = this.fileOpenDialog.Selections;
-
+        LogFormat format = LogFormat.Unknown;
+        ArrayList logFiles = new ArrayList();
         int count = 0;
-        bool validLog = false;
         
         foreach (string fn in selections)
         {
             if (File.GetAttributes(fn) == FileAttributes.Directory)
                 continue;
-            
-            try {
-                LogWrapper tmpLogWrapper = new LogWrapper();
-                tmpLogWrapper.ReadFile(fn);
 
-                if (this.totalLog.Format == LogFormat.Unknown)
-                    this.totalLog = tmpLogWrapper;
-                else
-                    this.totalLog.Append(tmpLogWrapper);
- 
-                if (tmpLogWrapper.Format != this.totalLog.Format)
-                    this.ShowDifferenLogFormatDialog(fn);
-                
-                count++;
-                validLog = true;
-                
-            }
-            catch (ApplicationException e)
+            format = LogBase.DetectLogFormatFromFile(fn);
+
+            if (format == LogFormat.Unknown)
             {
                 this.ShowUnknownLogFormatDialog(fn);
+                continue;
             }
+	    
+            Hashtable logFileInfo = new Hashtable();        
+            logFileInfo["Filename"] = fn;
+            logFileInfo["Format"] = format;
+            
+            logFiles.Add(logFileInfo);
+            count++;
         }
-
-        // Sync the appended logs with this.totalLog's logInstance.
-        this.totalLog.ReverseSync();
-
-        if (validLog == false)
+        
+        if (count == 0)
             return;
+        
+        string status = String.Format("{0}: {1}",
+                Drohne.i18n("Selected Files"), count);
 
-        string statusStr = String.Format("{0}: {1}, {2}: {3}",
-                Drohne.i18n("Loaded Files"), count,
-                Drohne.i18n("Log Format"), this.totalLog.Format);
-        this.statusbar.Push(1, statusStr);
+        this.statusbar.Push(1, status);
         
         this.fileOpenDialog.Hide();
-
-        this.saveFilename = "";
-
-        this.PopulateSlicesTreeView();
     }
 
     public void OnFileOpenDialogCancelButtonClicked(object obj, EventArgs args)
@@ -296,6 +282,7 @@ public class GUI
         }
     }
 
+    /*
     private void PopulateSlicesTreeView()
     {
         int count = 0;
@@ -310,7 +297,9 @@ public class GUI
                     slice.start.ToString(), slice.end.ToString());
         }
     }
-
+    */
+    
+    /*
     private void GetSelectedSlices()
     {
         if (this.totalLog == null)
@@ -338,4 +327,5 @@ public class GUI
         this.resultLog.CreateLogInstance(this.totalLog.Format);
         this.resultLog.ReverseSync();
     }
+    */
 }
