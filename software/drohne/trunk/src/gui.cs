@@ -45,8 +45,6 @@ public class GUI
 
     private ListStore slicesStore = null;
     private ArrayList slicesArray = null;
-
-    private string saveFilename = "";
     
     public GUI(string[] args)
     {
@@ -74,22 +72,18 @@ public class GUI
         Application.Run();
     }
 
-    /*************************
-     * begin signal handlers *
-     *************************/
-
-    /*
-     * signal handlers for mainWindow
-     */
+    /**********************************
+     * signal handlers for mainWindow *
+     **********************************/
     public void OnMainWindowDeleteEvent(object obj, DeleteEventArgs args)
     {
         Application.Quit();
         args.RetVal = true;
     }
 
-    /*
-     * signal handlers for menubar
-     */
+    /*******************************
+     * signal handlers for menubar *
+     *******************************/
     public void OnMenuFileOpenActivate(object obj, EventArgs args)
     {
         if ((ResponseType) this.fileOpenDialog.Run() != ResponseType.Ok)
@@ -101,25 +95,27 @@ public class GUI
 
     public void OnMenuFileSaveActivate(object obj, EventArgs args)
     {
+        /*
         if (this.saveFilename == "")
         {
             this.OnMenuFileSaveAsActivate(obj, args);
             return;
         }
-        
+        */
         //this.GetSelectedSlices();
-        this.resultLog.WriteFile(this.saveFilename, false);
+        //this.resultLog.WriteFile(this.saveFilename, false);
     }
 
     public void OnMenuFileSaveAsActivate(object obj, EventArgs args)
     {
+        /*
         this.fileSaveDialog.Filename = this.GetSaveFilename();
 
         if ((ResponseType) this.fileSaveDialog.Run() != ResponseType.Ok)
         {
             this.fileSaveDialog.Hide();
             return;
-        }
+        }*/
     }
 
     public void OnMenuFileQuitActivate(object obj, EventArgs args)
@@ -136,26 +132,28 @@ public class GUI
         this.aboutDialog.Show();
     }
     
-    /*
-     * signal handlers for fileSaveDialog   
-     */
+    /**************************************
+     * signal handlers for fileSaveDialog * 
+     **************************************/
     public void OnFileSaveDialogOkButtonClicked(object obj, EventArgs args)
     {
+        /*
         this.saveFilename = this.fileSaveDialog.Filename;
         this.fileSaveDialog.Hide();
 
         this.OnMenuFileSaveActivate(obj, args);
+        */
     }
    
     public void OnFileSaveDialogCancelButtonClicked(object obj, EventArgs args)
     {
-        this.fileSaveDialog.Hide();
-        this.saveFilename = "";
+        //this.fileSaveDialog.Hide();
+        //this.saveFilename = "";
     }
 
-    /*
-     * signal handlers for fileOpenDialog
-     */
+    /**************************************
+     * signal handlers for fileOpenDialog *
+     **************************************/
     public void OnFileOpenDialogOkButtonClicked(object obj, EventArgs args)
     {
         string[] selections = this.fileOpenDialog.Selections;
@@ -193,6 +191,8 @@ public class GUI
         this.statusbar.Push(1, status);
         
         this.fileOpenDialog.Hide();
+
+        this.LoadSelectedLogFiles(logFiles);
     }
 
     public void OnFileOpenDialogCancelButtonClicked(object obj, EventArgs args)
@@ -200,15 +200,10 @@ public class GUI
         this.fileOpenDialog.Hide();
     }
 
-    /***********************
-     * end signal handlers *
-     ***********************/
-    
-    /************************************
-     * begin additional (popup) dialogs *
-     ************************************/
-
-    private void ShowDifferenLogFormatDialog(string filename)
+    /**********************
+     * additional dialogs *
+     **********************/
+    private void ShowDifferentLogFormatDialog(string filename)
     {
         string warning = String.Format("{0}:\r\n\"{1}\"",
                 Drohne.i18n("Different log format detected"), filename);
@@ -234,23 +229,9 @@ public class GUI
         dialog.Destroy();
     }
 
-    /**********************************
-     * end additional (popup) dialogs *
-     **********************************/
-
-    private string GetSaveFilename()
-    {
-        string filename = "drohne.txt";
-        if (this.totalLog == null)
-            return filename;
-
-        filename = String.Format("drohne_{0}-{1}.txt",
-                this.totalLog.start.ToString("yyyyMMdd"),
-                this.totalLog.end.ToString("yyyyMMdd"));
-
-        return filename;    
-    }
-
+    /******************************
+     * methods for slicesTreeView *
+     ******************************/
     private void SetupSlicesTreeView()
     {
         this.slicesStore = new ListStore(typeof(int),
@@ -282,7 +263,43 @@ public class GUI
         }
     }
 
-    /*
+    private void LoadSelectedLogFiles(ArrayList logFiles)
+    {
+        int count = 0;
+        string status = "";
+        this.totalLog = null;
+        
+        foreach (Hashtable logFileInfo in logFiles)
+        {
+            string fn = (String) logFileInfo["Filename"];
+            LogFormat format = (LogFormat) logFileInfo["Format"];
+
+            if (this.totalLog == null)
+                this.totalLog = LogBase.CreateLogInstanceFromFile(fn, format);
+            else
+                this.totalLog.Append(LogBase.CreateLogInstanceFromFile(fn,
+                            format));
+
+            if (format != this.totalLog.Format)
+                this.ShowDifferentLogFormatDialog(fn);
+
+            status = String.Format("{0}: \"{1}\"",
+                    Drohne.i18n("Loaded File"), fn);
+
+            this.statusbar.Push(1, status);
+
+            count++;
+        }
+
+        status = String.Format("{0}: {1}, {2}: {3}",
+                Drohne.i18n("Files Loaded"), count,
+                Drohne.i18n("Log Format"), this.totalLog.Format);
+
+        this.statusbar.Push(1, status);
+        
+        this.PopulateSlicesTreeView();
+    }
+    
     private void PopulateSlicesTreeView()
     {
         int count = 0;
@@ -297,7 +314,7 @@ public class GUI
                     slice.start.ToString(), slice.end.ToString());
         }
     }
-    */
+    
     
     /*
     private void GetSelectedSlices()

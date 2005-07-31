@@ -38,6 +38,9 @@ public class LogBase
     public DateTime start = new DateTime(0);
     public DateTime end = new DateTime(0);
     
+    private LogFormat format = LogFormat.Unknown;
+    public virtual LogFormat Format { get { return format; } }
+
     public LogBase(){}
     
     public LogBase(ArrayList dataArray, DateTime start, DateTime end)
@@ -233,98 +236,32 @@ public class LogBase
 
         return format;
     }
-}
 
-
-public class LogWrapper: LogBase
-{
-    private LogBase logInstance = null;
-    private LogFormat logFormat = LogFormat.Unknown;
-
-    public LogFormat Format
+    public static LogBase CreateLogInstanceFromFile
+        (string filename, LogFormat format)
     {
-        get { return logFormat; }
-    }
-    
-    public override void ParseStringData(string dataString)
-    {
-        this.CreateLogInstance(ref dataString);
-        this.logInstance.ParseStringData(dataString);
-        this.Sync();
-    }
-
-    public void CreateLogInstance(LogFormat format)
-    {
+        LogBase logInstance = null;
         switch (format)
         {
             case LogFormat.GPRMC:
-                this.logInstance = new LogGPRMC();
+                logInstance = new LogGPRMC(); 
                 break;
+                
             case LogFormat.OziExplorer:
-                this.logInstance = new LogOziExplorer();
+                logInstance = new LogOziExplorer();
                 break;
-            case LogFormat.Unknown:
-                throw new ApplicationException("Unknown LogFormat");
         }
-    }
-    
-    public void CreateLogInstance(ref string dataString)
-    {
-        if (this.logInstance != null)
-            return;
-            
-        this.SpecifyLogFormat(ref dataString);
-        
-        this.CreateLogInstance(this.logFormat);
-    }
-    
-    private void SpecifyLogFormat(ref string dataString)
-    {
-        Hashtable dummyEntry = new Hashtable();
-        string[] lines = dataString.Split('\n');
-        
-        foreach (string line in lines)
-        {   
-            if (LogGPRMC.IsLogEntry(line, ref dummyEntry))
-            {
-                this.logFormat = LogFormat.GPRMC;
-                break;
-            }
 
-            if (LogOziExplorer.IsLogEntry(line, ref dummyEntry))
-            {
-                this.logFormat = LogFormat.OziExplorer;
-                break;
-            }
-        }
-    }
-
-    public void Sync()
-    {
-        this.dataArray = this.logInstance.dataArray;
-        this.start = this.logInstance.start;
-        this.end = this.logInstance.end;
-    }
-
-    public void ReverseSync()
-    {
-        this.logInstance.dataArray = this.dataArray;
-        this.logInstance.start = this.start;
-        this.logInstance.end = this.end;
-    }
-
-    public override string EntryToString(Hashtable dataEntry)
-    {
-        if (this.logInstance == null)
-            throw new ApplicationException("LogInstance not initialized");
-	
-        return this.logInstance.EntryToString(dataEntry);
+        logInstance.ReadFile(filename);
+        return logInstance;
     }
 }
 
-
 public class LogGPRMC: LogBase
-{ 
+{
+    private LogFormat format = LogFormat.GPRMC;
+    public override LogFormat Format { get { return format; } }
+        
     public override void ParseStringData(string dataString)
     {
         string[] lines = dataString.Split('\n');
@@ -417,6 +354,9 @@ public class LogGPRMC: LogBase
 
 public class LogOziExplorer: LogBase
 {
+    private LogFormat format = LogFormat.OziExplorer;
+    public override LogFormat Format { get { return format; } }
+
     public override void ParseStringData(string dataString)
     {
         string[] lines = dataString.Split('\n');
