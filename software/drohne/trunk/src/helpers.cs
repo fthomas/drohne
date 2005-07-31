@@ -21,27 +21,27 @@
 
 using System;
 
-public class Filename
+public class FilenameHelper
 {
-    private string filename = "";
+    private string name = "";
     private string extension = "";
     
     public string Filename
     {
         get {
-            return String.Format("{0}{1}", this.filename, this.extension);
+            return String.Format("{0}{1}", this.name, this.extension);
         }
         
         set {
             int lastDot = value.LastIndexOf(".");
             if (lastDot == -1)
-                this.filename = value;
-            else {
-                int extLength = value.Length - lastDot;
-                int fnLength = value.Length - extLength;
-            
-                this.filename = value.Substring(0, fnLength);
-                this.extension = value.Substring(lastDot, extLength);
+                this.name = value;
+            else
+            {
+                int extensionLength = value.Length - lastDot;
+                
+                this.name = value.Substring(0, lastDot);
+                this.extension = value.Substring(lastDot, extensionLength);
             }
         }
     }
@@ -57,18 +57,34 @@ public class Filename
         }
     }
 
-    public void ResetFilename()
+    public FilenameHelper() {}
+    
+    public FilenameHelper(string name, string extension)
     {
-        this.filename = "";
+        this.name = name;
+        this.extension = extension;
+    }
+    
+    public void ResetName()
+    {
+        this.name = "";
     }
 
     public bool IsEmpty()
     {
-        return this.filename == "";
+        return this.name == "";
     }
 
-    public static string GetExtension()
+    public static string GetExtension(string filename)
     {
+        string extension = "";
+        int lastDot = filename.LastIndexOf(".");
         
+        if (lastDot != -1)
+        {
+            int extensionLength = filename.Length - lastDot;
+            extension = filename.Substring(lastDot, extensionLength);
+        }
+        return extension;
     }
 }

@@ -96,6 +96,7 @@ public class LogBase
 
             tmpArray.Add(dataEntry);
         }
+        
         return new LogBase(tmpArray, sliceBegin, sliceEnd);
     }
     
@@ -107,7 +108,7 @@ public class LogBase
         DateTime dayPlus1 = new DateTime(0);
 
         DateTime splitStart = this.start;
-        DateTime splitEnd = new DateTime();
+        DateTime splitEnd = new DateTime(0);
         
         bool first = true;
         int count = this.dataArray.Count;
@@ -124,13 +125,18 @@ public class LogBase
             
             dayPlus1 = (DateTime) dataEntry["GenDateTime"];
 
-            if (dayPlus1 - dayPlus0 > breakTime || i == count)
+            if (dayPlus1 - dayPlus0 > breakTime)
             {
                 splitEnd = dayPlus0;
                 logSliceArray.Add(this.GetSlice(splitStart, splitEnd));
                 splitStart = dayPlus1;
             }
-            
+            else if (i == count)
+            {
+                splitEnd = dayPlus1;
+                logSliceArray.Add(this.GetSlice(splitStart, splitEnd));
+            }
+
             dayPlus0 = (DateTime) dataEntry["GenDateTime"];
         }
         return logSliceArray;

@@ -46,7 +46,7 @@ public class GUI
     private ListStore slicesStore = null;
     private ArrayList slicesArray = null;
 
-    private Filename saveFilename = new Filename();
+    private FilenameHelper saveFilename = new FilenameHelper();
     
     public GUI(string[] args)
     {
@@ -102,13 +102,31 @@ public class GUI
             this.OnMenuFileSaveAsActivate(obj, args);
             return;
         }
+       
+        if (this.totalLog == null)
+        {
+            // this.ShowCannotSaveFileDialog
+            
+            this.fileSaveDialog.Filename = "";
+            this.saveFilename.ResetName();
+            
+            return;
+        }
         
         this.GetSelectedSlices();
         this.resultLog.WriteFile(this.saveFilename.Filename, false);
+
+        string status = String.Format("{0}: \"{1}\", {2}: {3}",
+                Drohne.i18n("File Saved"), this.saveFilename.Filename,
+                Drohne.i18n("Total Entries"), this.resultLog.dataArray.Count);
+
+        this.statusbar.Push(1, status);
     }
 
     public void OnMenuFileSaveAsActivate(object obj, EventArgs args)
     {
+        if (this.saveFilename.IsEmpty())
+            this.saveFilename.Filename = "drohne_log";
         
         this.fileSaveDialog.Filename = this.saveFilename.Filename;
 
@@ -137,8 +155,13 @@ public class GUI
      * signal handlers for fileSaveDialog * 
      **************************************/
     public void OnFileSaveDialogOkButtonClicked(object obj, EventArgs args)
-    {
-        this.saveFilename.Filename = this.fileSaveDialog.Filename;
+    {   
+        string fn = this.fileSaveDialog.Filename;
+        if (Directory.Exists(fn))
+            return;
+
+        this.saveFilename.Filename = fn;
+        
         this.fileSaveDialog.Hide();
 
         this.OnMenuFileSaveActivate(obj, args);
@@ -147,7 +170,9 @@ public class GUI
     public void OnFileSaveDialogCancelButtonClicked(object obj, EventArgs args)
     {
         this.fileSaveDialog.Hide();
-        this.saveFilename.ResetFilename();
+
+        this.fileSaveDialog.Filename = "";
+        this.saveFilename.ResetName();
     }
 
     /**************************************
@@ -162,7 +187,7 @@ public class GUI
         
         foreach (string fn in selections)
         {
-            if (File.GetAttributes(fn) == FileAttributes.Directory)
+            if (Directory.Exists(fn))
                 continue;
 
             format = LogBase.DetectLogFormatFromFile(fn);
@@ -287,13 +312,14 @@ public class GUI
 
             this.statusbar.Push(1, status);
 
-            count++;
+            if (count++ == 0)
+                this.saveFilename.Extension = FilenameHelper.GetExtension(fn);
         }
 
         status = String.Format("{0}: {1}, {2}: {3}",
                 Drohne.i18n("Files Loaded"), count,
                 Drohne.i18n("Log Format"), this.totalLog.Format);
-
+        
         this.statusbar.Push(1, status);
         
         this.PopulateSlicesTreeView();
