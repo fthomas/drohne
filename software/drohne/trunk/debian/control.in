@@ -8,5 +8,5 @@ Build-Depends-Indep: @cdbs@, cli-common (>= 0.1.3), mono-mcs (>= 1.0) | c-sharp-
 Package: drohne
 Architecture: all
 Depends: ${cli:Depends}
-Description: unknown
+Description: utility for splitting up and cleaning log files
  unknown
