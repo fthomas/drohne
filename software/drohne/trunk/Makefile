@@ -1,7 +1,7 @@
+VERSION = 0.2.0
+
 DESTDIR =
 PREFIX = /usr/local
-
-VERSION = 0.2.0
 
 SOURCES = \
  src/main.cs \
