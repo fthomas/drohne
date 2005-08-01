@@ -34,5 +34,28 @@
     <manvolume>1</manvolume>
   </refmeta>
 
+  <refnamediv>
+    <refname>&dhbinary;</refname>
+    <refpurpose>an utility for splitting up and cleaning log files</refpurpose>
+  </refnamediv>
+
+  <refsynopsisdiv>
+    <cmdsynopsis>
+      <command>&dhbinary;</command>
+    </cmdsynopsis>
+  </refsynopsisdiv>
+
+  <refsect1>
+    <title>AUTHOR</title>
+    <para>Written by Frank S. Thomas.</para>
+  </refsect1>
+
+  <refsect1>
+    <title>COPYRIGHT</title>
+    <para>Copyright (C) 2003,2005 Frank S. Thomas.</para>
+    <para>This is free software; see the source for copying conditions.
+      There is NO warranty; not even for MERCHANTABILITY or FITNESS FOR
+      A PARTICULAR PURPOSE.</para>
+  </refsect1>
   
 </refentry>
