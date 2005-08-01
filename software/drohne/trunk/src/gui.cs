@@ -155,7 +155,7 @@ public class GUI
      * signal handlers for fileSaveDialog * 
      **************************************/
     public void OnFileSaveDialogOkButtonClicked(object obj, EventArgs args)
-    {   
+    {
         string fn = this.fileSaveDialog.Filename;
         if (Directory.Exists(fn))
             return;

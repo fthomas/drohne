@@ -381,8 +381,8 @@ public class LogOziExplorer: LogBase
     public static bool IsLogEntry(string line, ref Hashtable dataEntry)
     {
         string pattern = @"(\-?\d{1,3}\.\d+),(\-?\d{1,3}\.\d+),(0|1),"
-            + @"(\-?\d+),(\d+\.\d+),(\d{2}\-\D{3}\-\d{2}),(\d{2}:\d{2}:\d{2}),"
-            + @"(\d{1,2})?,(\d\.\d)?,([23]{1}D)?";
+            + @"(\-?\d+),(\d+\.\d+),(\d{2}\-\D{3}\-\d{2}),"
+            + @"(\d{2}:\d{2}:\d{2}),?(\d{1,2})?,?(\d\.\d)?,?([23]{1}D)?";
         
         Match lineMatch = Regex.Match(line, pattern, RegexOptions.IgnoreCase);
         
