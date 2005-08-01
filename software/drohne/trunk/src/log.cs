@@ -66,13 +66,28 @@ public class LogBase
 
     public void Append(LogBase newLog)
     {
-        this.dataArray.AddRange(newLog.dataArray);
-        
-        if (this.start > newLog.start)
-            this.start = newLog.start;
-
-        if (this.end < newLog.end)
+        if (newLog.end < this.start)
+        {
+            this.dataArray.InsertRange(0, newLog.dataArray);
+            this.start = newLog.start;    
+        }
+        else if (newLog.start > this.end)
+        {
+            this.dataArray.AddRange(newLog.dataArray);
             this.end = newLog.end;
+        }
+        else
+        {
+            // TODO: sort this.dataArray after appending newLog.dataArray,
+            // beause this.dataArray is then mixed up.
+            this.dataArray.AddRange(newLog.dataArray);
+            
+            if (this.start > newLog.start)
+                this.start = newLog.start;
+
+            if (this.end < newLog.end)
+                this.end = newLog.end;
+        }
     }
  
     public void UpdateLogStartEnd(DateTime dateTime)
@@ -82,6 +97,10 @@ public class LogBase
         
         if (this.end < dateTime)
             this.end = dateTime;
+    }
+    
+    public void SortByDateTime()
+    {
     }
 
     public LogBase GetSlice(DateTime sliceBegin, DateTime sliceEnd)

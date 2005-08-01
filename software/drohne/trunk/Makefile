@@ -1,6 +1,8 @@
 DESTDIR =
 PREFIX = /usr/local
 
+VERSION = 0.2.0
+
 SOURCES = \
  src/main.cs \
  src/gui.cs \
@@ -36,3 +38,9 @@ install: build
 	install -D -m644 -p bin/drohne.exe $(DESTDIR)$(PREFIX)/lib/drohne/drohne.exe
 	install -D -m644 -p src/drohne.desktop $(DESTDIR)$(PREFIX)/share/applications/drohne.desktop
 	install -D -m644 -p doc/drohne.1.gz $(DESTDIR)$(PREFIX)/share/man/man1/drohne.1.gz
+
+tarball:
+	svn export . drohne-$(VERSION)
+	rm -rf drohne-$(VERSION)/debian
+	tar -zcf drohne-$(VERSION).tar.gz drohne-$(VERSION)
+	rm -rf drohne-$(VERSION)
