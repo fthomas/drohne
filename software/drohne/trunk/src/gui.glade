@@ -224,6 +224,7 @@
   <property name="destroy_with_parent">False</property>
   <property name="name" translatable="yes">Drohne</property>
   <property name="copyright" translatable="yes">Copyright © 2003, 2005 Frank S. Thomas</property>
+  <property name="comments" translatable="yes">Drohne is a utility for splitting up and cleaning log files.</property>
   <property name="authors">Frank S. Thomas &lt;frank@thomas-alfeld.de&gt;</property>
   <property name="translator_credits" translatable="yes" comments="TRANSLATORS: Replace this string with your names, one name per line.">translator-credits</property>
 </widget>

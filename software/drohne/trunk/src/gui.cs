@@ -67,7 +67,7 @@ public class GUI
         Glade.XML fileOpenDialogGlade = new Glade.XML(null, "gui.glade",
                 "fileOpenDialog", null);
         fileOpenDialogGlade.Autoconnect(this);
-       
+      
         this.fileOpenDialog.SelectMultiple = true;
         this.SetupSlicesTreeView();
         

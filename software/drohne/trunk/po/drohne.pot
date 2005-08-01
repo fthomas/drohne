@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2005-08-01 18:41+0200\n"
+"POT-Creation-Date: 2005-08-01 20:32+0200\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -84,14 +84,18 @@ msgstr ""
 msgid "Copyright © 2003, 2005 Frank S. Thomas"
 msgstr ""
 
-#: src/gui.glade:228
+#: src/gui.glade:227
+msgid "Drohne is a utility for splitting up and cleaning log files."
+msgstr ""
+
+#: src/gui.glade:229
 msgid "translator-credits"
 msgstr ""
 
-#: src/gui.glade:233
+#: src/gui.glade:234
 msgid "Save Log File"
 msgstr ""
 
-#: src/gui.glade:272
+#: src/gui.glade:273
 msgid "Open Log Files"
 msgstr ""
