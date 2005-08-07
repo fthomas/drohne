@@ -1,2 +1,2 @@
 #!/bin/sh
-mono /usr/lib/drohne/drohne.exe
+/usr/bin/mono /usr/lib/drohne/drohne.exe "$@"

@@ -3,7 +3,7 @@ Section: utils
 Priority: optional
 Maintainer: Frank S. Thomas <frank@thomas-alfeld.de>
 Standards-Version: 3.6.2
-Build-Depends-Indep: @cdbs@, cli-common (>= 0.1.3), mono-mcs (>= 1.0) | c-sharp-compiler, libgtk-cil, libglade-cil, pkg-config
+Build-Depends-Indep: @cdbs@, cli-common (>= 0.1.3), mono-mcs (>= 1.0) | c-sharp-compiler, libgtk2.0-cil, libglade2.0-cil, pkg-config
 
 Package: drohne
 Architecture: all
