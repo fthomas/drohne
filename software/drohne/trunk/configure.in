@@ -1,0 +1,12 @@
+AC_INIT(README)
+AC_CANONICAL_SYSTEM
+AM_INIT_AUTOMAKE(drohne, 0.2.0)
+AM_MAINTAINER_MODE
+
+AC_PROG_INSTALL
+
+AC_OUTPUT([
+Makefile
+src/Makefile
+src/AssemblyInfo.cs
+])
