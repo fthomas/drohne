@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE refentry PUBLIC "-//OASIS//DTD DocBook XML V4.2//EN"
+"file:///usr/share/xml/docbook/schema/dtd/4.2/docbookx.dtd" [
+
+  <!ENTITY dhfirstname "<firstname>Frank</firstname>">
+  <!ENTITY dhsurname   "<surname>Thomas</surname>">
+  <!ENTITY dhusername  "Frank S. Thomas">
+  <!ENTITY dhemail     "<email>frank@thomas-alfeld.de</email>">
+  <!ENTITY dhbinary    "drohne">
+  <!ENTITY dhdate      "<date>July 28, 2005</date>">
+
+  <!ENTITY debian      "<productname>Debian</productname>">
+  <!ENTITY gnu         "<acronym>GNU</acronym>">
+]>
+
+<refentry>
+  <refentryinfo>
+    <address>
+      &dhemail;
+    </address>
+    <author>
+      &dhfirstname;
+      &dhsurname;  
+    </author>
+    <copyright>
+      <year>2005</year>
+      <holder>&dhusername;</holder>
+    </copyright>
+    &dhdate;
+  </refentryinfo>
+  
+  <refmeta>
+    <refentrytitle>&dhbinary;</refentrytitle>
+    <manvolume>1</manvolume>
+  </refmeta>
+
+  <refnamediv>
+    <refname>&dhbinary;</refname>
+    <refpurpose>an utility for splitting up and cleaning log files</refpurpose>
+  </refnamediv>
+
+  <refsynopsisdiv>
+    <cmdsynopsis>
+      <command>&dhbinary;</command>
+    </cmdsynopsis>
+  </refsynopsisdiv>
+
+  <refsect1>
+    <title>AUTHOR</title>
+    <para>Written by Frank S. Thomas.</para>
+  </refsect1>
+
+  <refsect1>
+    <title>COPYRIGHT</title>
+    <para>Copyright (C) 2003,2005 Frank S. Thomas.</para>
+    <para>This is free software; see the source for copying conditions.
+      There is NO warranty; not even for MERCHANTABILITY or FITNESS FOR
+      A PARTICULAR PURPOSE.</para>
+  </refsect1>
+  
+</refentry>

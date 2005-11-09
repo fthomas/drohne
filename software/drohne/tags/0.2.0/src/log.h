@@ -22,31 +22,18 @@
 #ifndef LOG_H
 #define LOG_H
 
-#include <QDateTime>
-#include <QString>
-#include <QStringList>
-
 enum LogFormat { Unknown, GPRMC, OziExplorer };
 
 class LogBase 
 {
     public:
         LogBase();
-        LogBase(/*ArrayList dataArray*/, const QDateTime &start,
-                const QDateTime &end);
+        LogBase(ArrayList dataArray, DateTime start, DateTime end);
 
-        void ReadFile(const QString &filename);
-        void ReadFile(const QStringList &filenames);
-        void WriteFile(const QString &filename, bool append) const;
-    
-        ArrayList m_dataArray;
-        QDateTime m_start;
-        QDateTime m_end;
-
-    private:
-        LogFormat m_format;
-
-    /*
+    public ArrayList dataArray = new ArrayList();
+    public DateTime start = new DateTime(0);
+    public DateTime end = new DateTime(0);
+    private LogFormat format = LogFormat.Unknown;
     public virtual LogFormat Format { get { return format; } }
     public virtual void ParseStringData(string dataString)
     public void Clear()
@@ -55,39 +42,36 @@ class LogBase
     public void SortByDateTime()
     public LogBase GetSlice(DateTime sliceBegin, DateTime sliceEnd)
     public ArrayList SplitByBreak(TimeSpan breakTime)
-    
-    
+    public void ReadFile(string filename)
+    public void ReadFile(string[] filenames)
+    public void WriteFile(string filename, bool append)
     public virtual string EntryToString(Hashtable dataEntry)
     public override string ToString()
     public static LogFormat DetectLogFormatFromFile(string filename)
     public static LogFormat DetectLogFormatFromString(ref string dataString)
     public static LogBase CreateLogInstance(LogFormat format)
     public static LogBase CreateLogInstanceFromFile(string filename, LogFormat format)
-    */
 };
 
 class LogGPRMC : public LogBase
 {
-    /*
     private LogFormat format = LogFormat.GPRMC;
-    public override LogFormat Format { get { return format; } }        
+    public override LogFormat Format { get { return format; } }
+        
     public override void ParseStringData(string dataString)
     public static bool IsLogEntry(string line, ref Hashtable dataEntry)
     public override string EntryToString(Hashtable dataEntry)
     public static DateTime GetEntryDateTime(string utcTime, string utcDate)
-    */
 };
 
 class LogOziExplorer : public LogBase
 {
-    /*
     private LogFormat format = LogFormat.OziExplorer;
     public override LogFormat Format { get { return format; } }
     public override void ParseStringData(string dataString)
     public static bool IsLogEntry(string line, ref Hashtable dataEntry)
     public override string EntryToString(Hashtable dataEntry)
     public static DateTime GetEntryDateTime(double days)
-    */
 };
 
 #endif

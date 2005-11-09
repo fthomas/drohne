@@ -1,0 +1,101 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
+# This file is distributed under the same license as the PACKAGE package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: PACKAGE VERSION\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2005-08-07 16:41+0200\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+
+#: src/gui.cs:120
+msgid "File Saved"
+msgstr ""
+
+#: src/gui.cs:121
+msgid "Total Entries"
+msgstr ""
+
+#: src/gui.cs:213
+msgid "Selected Files"
+msgstr ""
+
+#: src/gui.cs:233
+msgid "Different log format detected"
+msgstr ""
+
+#: src/gui.cs:246
+msgid "Unknown log format"
+msgstr ""
+
+#: src/gui.cs:270
+msgid "Select"
+msgstr ""
+
+#: src/gui.cs:273
+msgid "Log Start"
+msgstr ""
+
+#: src/gui.cs:276
+msgid "Log End"
+msgstr ""
+
+#: src/gui.cs:311
+msgid "Loaded File"
+msgstr ""
+
+#: src/gui.cs:320
+msgid "Files Loaded"
+msgstr ""
+
+#: src/gui.cs:321
+msgid "Log Format"
+msgstr ""
+
+#: src/gui.glade:8 src/gui.glade:225
+msgid "Drohne"
+msgstr ""
+
+#: src/gui.glade:37
+msgid "_File"
+msgstr ""
+
+#: src/gui.glade:92
+msgid "_Edit"
+msgstr ""
+
+#: src/gui.glade:114
+msgid "_Help"
+msgstr ""
+
+#: src/gui.glade:181
+msgid "label1"
+msgstr ""
+
+#: src/gui.glade:226
+msgid "Copyright © 2003, 2005 Frank S. Thomas"
+msgstr ""
+
+#: src/gui.glade:227
+msgid "Drohne is a utility for splitting up and cleaning log files."
+msgstr ""
+
+#: src/gui.glade:229
+msgid "translator-credits"
+msgstr ""
+
+#: src/gui.glade:234
+msgid "Save Log File"
+msgstr ""
+
+#: src/gui.glade:273
+msgid "Open Log Files"
+msgstr ""
