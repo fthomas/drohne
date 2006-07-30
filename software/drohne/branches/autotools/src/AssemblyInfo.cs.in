@@ -1,9 +1,0 @@
-//
-// AssemblyInfo.cs.in for Drohne
-//
-using System.Reflection;
-using System.Runtime.CompilerServices;
-
-[assembly: AssemblyVersion("@VERSION@")]
-[assembly: AssemblyTitle("Drohne")]
-[assembly: AssemblyCopyright("Copyright (C) 2003,2005 Frank S. Thomas")]

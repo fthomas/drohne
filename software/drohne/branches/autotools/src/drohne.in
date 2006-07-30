@@ -1,2 +1,0 @@
-#! /bin/sh
-exec @MONO@ @prefix@/lib/drohne/drohne.exe "$@"
