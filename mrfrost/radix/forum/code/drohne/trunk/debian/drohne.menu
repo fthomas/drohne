@@ -1,6 +1,6 @@
 ?package(drohne):\
     needs="X11"\
-    section="Apps/Tools"\
+    section="Applications/Science/Data Analysis"\
     title="Drohne"\
     longtitle=""\
     command="/usr/bin/drohne"
